@@ -33,28 +33,22 @@
 ## 📦 Установка и запуск
 
 1. Клонируем репозиторий:
-```bash
+```
 git clone https://github.com/<your-username>/Crematori.git
 cd Crematori
 ```
 Поднимаем Docker-контейнеры:
 ```
-bash
-Копировать код
 docker-compose up -d --build
 ```
 Устанавливаем зависимости Laravel:
 ```
-bash
-Копировать код
 docker exec -it laravel_app composer install
 docker exec -it laravel_app php artisan migrate
 docker exec -it laravel_app php artisan db:seed
 ```
 Устанавливаем зависимости фронтенда:
 ```
-bash
-Копировать код
 docker exec -it vue_frontend npm install
 docker exec -it vue_frontend npm run dev
 ```
@@ -62,6 +56,4 @@ docker exec -it vue_frontend npm run dev
 
 Backend API: http://localhost:9000/api
 Frontend: http://localhost:5173
-Backend API: http://localhost:9000/api
 
-Frontend: http://localhost:5173
