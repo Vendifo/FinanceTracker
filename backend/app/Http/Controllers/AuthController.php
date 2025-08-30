@@ -9,13 +9,13 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    // Регистрация пользователя
+    // Регистрация
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed', // password_confirmation
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
         $user = User::create([
@@ -27,7 +27,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Пользователь создан', 'user' => $user], 201);
     }
 
-    // Логин пользователя
+    // Логин
     public function login(Request $request)
     {
         $request->validate([
@@ -37,13 +37,12 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Неверный email или пароль.'],
             ]);
         }
 
-        // Создание токена для Sanctum
         $token = $user->createToken('api-token')->plainTextToken;
 
         return response()->json([
@@ -53,13 +52,13 @@ class AuthController extends Controller
         ]);
     }
 
-    // Получение текущего пользователя
+    // Текущий пользователь
     public function me(Request $request)
     {
         return response()->json($request->user());
     }
 
-    // Выход (удаление токена)
+    // Logout (удаление токена)
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
