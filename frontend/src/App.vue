@@ -1,11 +1,9 @@
 <template>
-  <div>
-    <ApiTest/>
-  </div>
+  <router-view />
 </template>
 
-
 <script setup lang="ts">
-import ApiTest from './components/ApiTest.vue'
-
 </script>
+
+<style>
+</style>
