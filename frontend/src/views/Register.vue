@@ -1,17 +1,20 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md bg-white p-8 rounded shadow-md">
-      <h1 class="text-2xl font-bold mb-6 text-center">Регистрация</h1>
-      <form @submit.prevent="register" class="space-y-4">
-        <input v-model="name" type="text" placeholder="Имя" class="w-full p-3 border rounded" />
-        <input v-model="email" type="email" placeholder="Email" class="w-full p-3 border rounded" />
-        <input v-model="password" type="password" placeholder="Пароль" class="w-full p-3 border rounded" />
-        <input v-model="passwordConfirmation" type="password" placeholder="Подтверждение пароля" class="w-full p-3 border rounded" />
-        <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition">Зарегистрироваться</button>
-      </form>
-      <p class="mt-4 text-center text-gray-600">
-        Уже есть аккаунт? <router-link to="/login" class="text-blue-500 hover:underline">Войти</router-link>
-      </p>
+  <div class="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4">
+    <div class="w-full max-w-md bg-white p-8 rounded shadow-md space-y-6">
+      <h1 class="text-4xl font-semibold text-gray-800 text-center">Регистрация</h1>
+
+      <InputField v-model="name" type="text" placeholder="Имя" />
+      <InputField v-model="email" type="email" placeholder="Email" />
+      <InputField v-model="password" type="password" placeholder="Пароль" />
+      <InputField v-model="passwordConfirmation" type="password" placeholder="Подтверждение пароля" />
+
+      <div class="flex gap-4">
+        <PrimaryButton class="flex-1" @click="register">Зарегистрироваться</PrimaryButton>
+        <button @click="goToLogin"
+          class="flex-1 px-4 py-3 border border-gray-400 rounded-md text-gray-700 hover:bg-gray-200 transition">
+          Войти
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -20,11 +23,14 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
+import InputField from '@/components/InputField.vue'
+import PrimaryButton from '@/components/PrimaryButton.vue'
 
 const name = ref('')
 const email = ref('')
 const password = ref('')
 const passwordConfirmation = ref('')
+
 const router = useRouter()
 const userStore = useUserStore()
 
@@ -36,5 +42,9 @@ const register = async () => {
   } catch (e: any) {
     alert(e.response?.data?.message || e.message)
   }
+}
+
+const goToLogin = () => {
+  router.push('/login')
 }
 </script>
