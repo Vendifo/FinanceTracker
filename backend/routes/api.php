@@ -9,10 +9,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 // Защищённые маршруты (требуют токен)
-Route::middleware('auth.api')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get('/current', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
-
-    // Пример ресурсного контроллера пользователей
     Route::apiResource('users', UserController::class);
 });
+

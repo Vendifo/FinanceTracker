@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
-import Dashboard from '../views/Dashboard.vue'
-import { useUserStore } from '../stores/userStore'
+import Login from '@/views/Login.vue'
+import Register from '@/views/Register.vue'
+import Dashboard from '@/views/Dashboard.vue'
+import { useUserStore } from '@/stores/userStore'
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -16,15 +16,19 @@ const router = createRouter({
   routes,
 })
 
-// Навигационный guard
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
 
-  // Если маршрут защищён и нет токена → редирект на /login
-  if (to.meta.requiresAuth && !userStore.token) {
-    next('/login')
+  if (to.meta.requiresAuth) {
+    if (!userStore.token) return next('/login')
+
+    try {
+      await userStore.checkToken() // проверка токена на сервере
+      next()
+    } catch {
+      next('/login')
+    }
   } else if ((to.path === '/login' || to.path === '/register') && userStore.token) {
-    // Если пользователь уже авторизован → редирект на Dashboard
     next('/dashboard')
   } else {
     next()
