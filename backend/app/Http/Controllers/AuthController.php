@@ -2,39 +2,71 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
+/**
+ * Контроллер для аутентификации пользователей.
+ * Включает регистрацию, логин, logout и получение текущего пользователя.
+ */
 class AuthController extends Controller
 {
-    // Регистрация
-    public function register(Request $request)
+    /**
+     * Универсальный метод формирования JSON-ответа API.
+     *
+     * @param mixed $data Данные для ответа
+     * @param string $message Сообщение
+     * @param bool $success Статус успеха
+     * @param int $status HTTP-код
+     * @return JsonResponse
+     */
+    private function apiResponse($data = null, string $message = '', bool $success = true, int $status = 200): JsonResponse
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => $data
+        ], $status);
+    }
 
+    /**
+     * Регистрация нового пользователя.
+     *
+     * @param RegisterRequest $request
+     * @return JsonResponse
+     */
+    public function register(RegisterRequest $request): JsonResponse
+    {
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['message' => 'Пользователь создан', 'user' => $user], 201);
+        return $this->apiResponse(
+            ['user' => new UserResource($user)],
+            'Пользователь успешно создан',
+            true,
+            201
+        );
     }
 
-    // Логин
-    public function login(Request $request)
+    /**
+     * Логин пользователя и выдача токена.
+     *
+     * @param LoginRequest $request
+     * @return JsonResponse
+     * @throws ValidationException
+     */
+    public function login(LoginRequest $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
-
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -45,24 +77,37 @@ class AuthController extends Controller
 
         $token = $user->createToken('api-token')->plainTextToken;
 
-        return response()->json([
-            'message' => 'Успешный вход',
-            'user' => $user,
-            'token' => $token,
-        ]);
+        return $this->apiResponse(
+            [
+                'user' => new UserResource($user),
+                'token' => $token
+            ],
+            'Успешный вход'
+        );
     }
 
-    // Текущий пользователь
-    public function me(Request $request)
+    /**
+     * Получение текущего авторизованного пользователя.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function me(Request $request): JsonResponse
     {
-        return response()->json($request->user());
+        return $this->apiResponse(
+            ['user' => new UserResource($request->user())]
+        );
     }
 
-    // Logout (удаление токена)
-    public function logout(Request $request)
+    /**
+     * Logout — удаление текущего токена пользователя.
+     *
+     * @param Request $request
+     * @return Response Возвращает пустой ответ с кодом 204
+     */
+    public function logout(Request $request): Response
     {
         $request->user()->currentAccessToken()->delete();
-
-        return response()->json(['message' => 'Выход выполнен']);
+        return response()->noContent();
     }
 }
