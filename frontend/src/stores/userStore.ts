@@ -3,25 +3,23 @@ import api from '@/axios'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    token: localStorage.getItem('token') || '',
+    token: '' as string,
     user: null as null | any,
+    isAuthChecked: false, // чтобы знать, что проверка токена завершена
   }),
   actions: {
     async login(email: string, password: string) {
-      await api.get('http://localhost:9000/sanctum/csrf-cookie', { withCredentials: true })
       const res = await api.post('/login', { email, password })
-      this.token = res.data.token
+      // Правильно берём данные из вложенного объекта
+      this.token = res.data.data.token
+      this.user = res.data.data.user
       localStorage.setItem('token', this.token)
-      this.user = res.data.user
     },
-
-    async register(name: string, email: string, password: string, password_confirmation: string) {
-      await api.post('/register', { name, email, password, password_confirmation })
-    },
-
     async logout() {
       if (this.token) {
-        await api.post('/logout', {}, { headers: { Authorization: `Bearer ${this.token}` } })
+        try {
+          await api.post('/logout', {}, { headers: { Authorization: `Bearer ${this.token}` } })
+        } catch { }
       }
       this.token = ''
       this.user = null
@@ -29,12 +27,15 @@ export const useUserStore = defineStore('user', {
     },
 
     async checkToken() {
-      if (!this.token) throw new Error('Нет токена')
+      const token = localStorage.getItem('token')
+      if (!token) throw new Error('Нет токена')
+
       try {
-        const res = await api.get('/current', { headers: { Authorization: `Bearer ${this.token}` } })
-        this.user = res.data
+        const res = await api.get('/current', { headers: { Authorization: `Bearer ${token}` } })
+        this.user = res.data.data.user // если сервер возвращает в data.user
+        this.token = token
       } catch {
-        this.logout()
+        await this.logout()
         throw new Error('Токен недействителен')
       }
     },

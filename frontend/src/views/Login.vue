@@ -8,8 +8,11 @@
         <InputField v-model="password" type="password" placeholder="Пароль" />
 
         <div class="flex gap-4">
-          <PrimaryButton class="flex-1" @click="login">Войти</PrimaryButton>
+          <PrimaryButton type="button" class="flex-1" :disabled="isLoading" @click="login">
+            {{ isLoading ? 'Входим...' : 'Войти' }}
+          </PrimaryButton>
           <button
+            type="button"
             @click="goToRegister"
             class="flex-1 px-4 py-3 border border-gray-400 rounded-md text-gray-700 hover:bg-gray-200 transition"
           >
@@ -30,15 +33,22 @@ import PrimaryButton from '@/components/PrimaryButton.vue'
 
 const email = ref('')
 const password = ref('')
+const isLoading = ref(false)
+
 const router = useRouter()
 const userStore = useUserStore()
 
 const login = async () => {
+  if (isLoading.value) return
+  isLoading.value = true
+
   try {
     await userStore.login(email.value, password.value)
     router.push('/dashboard')
   } catch (e: any) {
     alert(e.response?.data?.message || e.message)
+  } finally {
+    isLoading.value = false
   }
 }
 

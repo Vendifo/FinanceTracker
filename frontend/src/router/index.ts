@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
 import Login from '@/views/Login.vue'
 import Register from '@/views/Register.vue'
 import Dashboard from '@/views/Dashboard.vue'
-import { useUserStore } from '@/stores/userStore'
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -19,20 +19,22 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
 
-  if (to.meta.requiresAuth) {
-    if (!userStore.token) return next('/login')
-
+  if (!userStore.isAuthChecked && userStore.token) {
     try {
-      await userStore.checkToken() // проверка токена на сервере
-      next()
-    } catch {
-      next('/login')
-    }
-  } else if ((to.path === '/login' || to.path === '/register') && userStore.token) {
-    next('/dashboard')
-  } else {
-    next()
+      await userStore.checkToken()
+    } catch { }
   }
+
+  if (to.meta.requiresAuth && !userStore.token) {
+    return next('/login')
+  }
+
+  if ((to.path === '/login' || to.path === '/register') && userStore.token) {
+    return next('/dashboard')
+  }
+
+  next()
 })
+
 
 export default router
