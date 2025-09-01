@@ -12,7 +12,7 @@ interface RoleServiceInterface
     public function all();
 
     /** Найти роль по ID */
-    public function find(int $id);
+    public function find($id);
 
     /** Создать новую роль */
     public function create(array $data);

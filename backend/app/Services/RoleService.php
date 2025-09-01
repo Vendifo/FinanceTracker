@@ -41,7 +41,7 @@ class RoleService implements RoleServiceInterface
      * @param int $id
      * @return Role|null
      */
-    public function find(int $id): ?Role
+    public function find($id): ?Role
     {
         return $this->roleRepository->find($id);
     }
