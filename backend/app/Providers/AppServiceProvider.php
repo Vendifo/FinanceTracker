@@ -8,21 +8,29 @@ use App\Interfaces\Services\UserServiceinterface;
 use App\Interfaces\Services\RoleServiceInterface;
 use App\Interfaces\Services\ArticleServiceInterface;
 use App\Interfaces\Services\OfficeServiceInterface;
+use App\Interfaces\Services\IncomeServiceInterface;
+use App\Interfaces\Services\ExpenseServiceInterface;
 
 use App\Services\UserService;
 use App\Services\RoleService;
 use App\Services\ArticleService;
 use App\Services\OfficeService;
+use App\Services\IncomeService;
+use App\Services\ExpenseService;
 
 use App\Interfaces\Repositories\UserRepositoryInterface;
 use App\Interfaces\Repositories\RoleRepositoryInterface;
 use App\Interfaces\Repositories\ArticleRepositoryInterface;
 use App\Interfaces\Repositories\OfficeRepositoryInterface;
+use App\Interfaces\Repositories\IncomeRepositoryInterface;
+use App\Interfaces\Repositories\ExpenseRepositoryInterface;
 
 use App\Repositories\UserRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\ArticleRepository;
 use App\Repositories\OfficeRepository;
+use App\Repositories\IncomeRepository;
+use App\Repositories\ExpenseRepository;
 
 
 
@@ -44,6 +52,12 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(OfficeRepositoryInterface::class, OfficeRepository::class);
         $this->app->bind(OfficeServiceInterface::class, OfficeService::class);
+
+        $this->app->bind(IncomeRepositoryInterface::class, IncomeRepository::class);
+        $this->app->bind(IncomeServiceInterface::class, IncomeService::class);
+
+        $this->app->bind(ExpenseRepositoryInterface::class, ExpenseRepository::class);
+        $this->app->bind(ExpenseServiceInterface::class, ExpenseService::class);
     }
 
     /**
