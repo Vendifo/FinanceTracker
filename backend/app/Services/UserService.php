@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Interfaces\Repositories\UserRepositoryInterface;
 use App\Interfaces\Services\UserServiceinterface;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Role;
 
 class UserService implements UserServiceinterface
 {
@@ -51,5 +53,22 @@ class UserService implements UserServiceinterface
 
         $this->userRepository->delete($user);
         return true;
+    }
+ /**
+     * Назначить пользователю роль.
+     *
+     * @param User $user
+     * @param int $roleId
+     * @return User
+     */
+   public function assignRole(User $user, int $roleId): User
+    {
+        $role = Role::findOrFail($roleId);
+
+        // так как belongsTo
+        $user->role()->associate($role);
+        $user->save();
+
+        return $user->fresh();
     }
 }

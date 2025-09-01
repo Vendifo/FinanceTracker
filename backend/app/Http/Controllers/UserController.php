@@ -9,6 +9,11 @@ use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
+
+use App\Models\User;
+use App\Models\Role;
+use Illuminate\Http\Request;
+
 /**
  * Контроллер для управления пользователями.
  * Использует UserService для бизнес-логики.
@@ -122,5 +127,17 @@ class UserController extends Controller
         }
 
         return response()->json(null, 204); // возвращаем JsonResponse с кодом 204
+    }
+
+    // Назначение роли пользователю
+    public function assignRole(Request $request, User $user)
+    {
+        $request->validate([
+            'role_id' => 'required|exists:roles,id',
+        ]);
+
+        $user = $this->userService->assignRole($user, $request->role_id);
+
+        return $this->apiResponse($user, 'Роль назначена');
     }
 }
