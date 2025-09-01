@@ -19,6 +19,13 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+
+            // Поля пользователя
+            $table->string('first_name', 150);
+            $table->string('last_name', 150);
+            $table->string('middle_name', 150)->nullable();
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->foreign('role_id')->references('id')->on('roles')->nullOnDelete();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
