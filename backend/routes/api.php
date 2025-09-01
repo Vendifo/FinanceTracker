@@ -7,6 +7,8 @@ use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FinanceController;
+
 use Illuminate\Support\Facades\Route;
 
 // Публичные маршруты (не требуют токена)
@@ -27,5 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('offices', OfficeController::class);
     Route::apiResource('incomes', IncomeController::class);
     Route::apiResource('expenses', ExpenseController::class);
+
+    Route::get('/finance/summary', [FinanceController::class, 'summary']);
+
 });
 
