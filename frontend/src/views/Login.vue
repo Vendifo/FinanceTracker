@@ -21,6 +21,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Модальное уведомление -->
+    <NotificationModal
+      v-model="modalVisible"
+      :type="modalType"
+      :title="modalTitle"
+      :message="modalMessage"
+      :duration="3000"
+    />
   </div>
 </template>
 
@@ -30,10 +39,16 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import InputField from '@/components/InputField.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
+import NotificationModal from '@/components/NotificationModal.vue'
 
 const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
+
+const modalVisible = ref(false)
+const modalType = ref<'success' | 'error'>('error')
+const modalTitle = ref('')
+const modalMessage = ref('')
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -46,7 +61,11 @@ const login = async () => {
     await userStore.login(email.value, password.value)
     router.push('/dashboard')
   } catch (e: any) {
-    alert(e.response?.data?.message || e.message)
+    // Показываем модальное уведомление при ошибке
+    modalType.value = 'error'
+    modalTitle.value = 'Ошибка!'
+    modalMessage.value = e.response?.data?.message || e.message
+    modalVisible.value = true
   } finally {
     isLoading.value = false
   }

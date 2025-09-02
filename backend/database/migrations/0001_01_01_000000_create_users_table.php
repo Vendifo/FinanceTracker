@@ -21,8 +21,9 @@ return new class extends Migration
             $table->timestamps();
 
             // Поля пользователя
-            $table->string('first_name', 150);
-            $table->string('last_name', 150);
+            $table->string('first_name', 150)->nullable();
+            $table->string('last_name', 150)->nullable();
+
             $table->string('middle_name', 150)->nullable();
             $table->unsignedBigInteger('role_id')->nullable();
             $table->foreign('role_id')->references('id')->on('roles')->nullOnDelete();

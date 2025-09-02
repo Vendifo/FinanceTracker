@@ -19,12 +19,21 @@ export const useUserStore = defineStore('user', {
       if (this.token) {
         try {
           await api.post('/logout', {}, { headers: { Authorization: `Bearer ${this.token}` } })
-        } catch { }
+        } catch {}
       }
       this.token = ''
       this.user = null
       localStorage.removeItem('token')
     },
+    async register(name: string, email: string, password: string, passwordConfirmation: string) {
+  await api.post('/register', {
+    name,
+    email,
+    password,
+    password_confirmation: passwordConfirmation
+  })
+  // Ничего не сохраняем в state, токен придёт только при логине
+},
 
     async checkToken() {
       const token = localStorage.getItem('token')
