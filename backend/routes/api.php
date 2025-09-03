@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('articles', ArticleController::class);
     Route::apiResource('offices', OfficeController::class);
+    Route::get('incomes/{office}', [IncomeController::class, 'byOffice']);
     Route::apiResource('incomes', IncomeController::class);
     Route::apiResource('expenses', ExpenseController::class);
 

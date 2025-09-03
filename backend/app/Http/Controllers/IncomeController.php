@@ -73,4 +73,11 @@ public function update(Request $request, $id)
         }
         return response()->json(['message' => 'Income deleted']);
     }
+
+
+    public function byOffice($id)
+    {
+        $income = $this->incomeService->getByOffice($id);
+        return response()->json(["data" => $income]);
+    }
 }
