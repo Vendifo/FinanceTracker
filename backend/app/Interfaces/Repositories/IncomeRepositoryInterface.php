@@ -11,5 +11,4 @@ interface IncomeRepositoryInterface
     public function create(array $data);
     public function update(Income $income, array $data);
     public function delete(Income $income);
-    public function getByOffice($id);
 }

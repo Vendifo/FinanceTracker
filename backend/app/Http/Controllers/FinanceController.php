@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\FinanceService;
+use App\Models\Income;
+use App\Models\Expense;
 
 class FinanceController extends Controller
 {
@@ -42,4 +44,41 @@ class FinanceController extends Controller
             'balance' => $balance,
         ]);
     }
+
+    public function index(Request $request)
+{
+    $officeId = $request->office_id;
+    $date = $request->date ?? now()->toDateString();
+
+    // Для таблиц: только выбранная дата
+    $recordsDate = $date; // отображаем за этот день
+
+    $incomesToday = Income::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereDate('created_at', $recordsDate)
+        ->get();
+
+    $expensesToday = Expense::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereDate('created_at', $recordsDate)
+        ->get();
+
+    // Для баланса: до выбранной даты
+    $totalIncome = Income::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereDate('created_at', '<=', $recordsDate)
+        ->sum('amount');
+
+    $totalExpense = Expense::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereDate('created_at', '<=', $recordsDate)
+        ->sum('amount');
+
+    return response()->json([
+        'incomes' => $incomesToday,
+        'expenses' => $expensesToday,
+        'balance' => $totalIncome - $totalExpense
+    ]);
+}
+
 }

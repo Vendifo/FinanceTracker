@@ -48,9 +48,4 @@ class IncomeService implements IncomeServiceInterface
 
         return $this->incomeRepository->delete($income);
     }
-
-    public function getByOffice($id)
-    {
-        return $this->incomeRepository->getByOffice($id);
-    }
 }

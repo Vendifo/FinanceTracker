@@ -32,9 +32,4 @@ class IncomeRepository implements IncomeRepositoryInterface
     {
         return $income->delete();
     }
-
-    public function getByOffice($id)
-    {
-        return Income::where('office_id', $id)->get();
-    }
 }
