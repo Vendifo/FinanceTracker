@@ -1,55 +1,61 @@
-import { defineStore } from 'pinia'
-import api from '@/axios'
+import { defineStore } from 'pinia';
+import api, { getCsrf } from '../axios';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    token: '' as string,
+    token: localStorage.getItem('token') || '',
     user: null as null | any,
-    isAuthChecked: false, // чтобы знать, что проверка токена завершена
+    isAuthChecked: false,
   }),
+  getters: {
+    isAuthenticated: (state) => !!state.token,
+  },
   actions: {
     async login(email: string, password: string) {
-      const res = await api.post('/login', { email, password })
-      // Правильно берём данные из вложенного объекта
-      this.token = res.data.data.token
-      this.user = res.data.data.user
-      localStorage.setItem('token', this.token)
+      await getCsrf(); // CSRF перед логином
+      const res = await api.post('/login', { email, password });
+      this.token = res.data.data.token;
+      this.user = res.data.data.user;
+      localStorage.setItem('token', this.token);
+      this.isAuthChecked = true;
     },
-    async logout() {
-      if (this.token) {
-        try {
-          await api.post('/logout', {}, { headers: { Authorization: `Bearer ${this.token}` } })
-        } catch {}
-      }
-      this.token = ''
-      this.user = null
-      localStorage.removeItem('token')
-    },
+
     async register(name: string, email: string, password: string, passwordConfirmation: string) {
+      await getCsrf(); // CSRF перед регистрацией
       await api.post('/register', {
         name,
         email,
         password,
         password_confirmation: passwordConfirmation,
-      })
-      // Ничего не сохраняем в state, токен придёт только при логине
+      });
+      // токен пока не сохраняем, будет через login
     },
 
     async checkToken() {
-      if (this.isAuthChecked) return // предотвращает повторные запросы
-
-      const token = localStorage.getItem('token')
-      if (!token) throw new Error('Нет токена')
+      if (this.isAuthChecked || !this.token) return;
 
       try {
-        const res = await api.get('/current', { headers: { Authorization: `Bearer ${token}` } })
-        this.user = res.data.data.user
-        this.token = token
-        this.isAuthChecked = true // обязательно выставить после успешного запроса
-      } catch {
-        await this.logout()
-        throw new Error('Токен недействителен')
+        const res = await api.get('/current', { headers: { Authorization: `Bearer ${this.token}` } });
+        this.user = res.data.data.user;
+        this.isAuthChecked = true;
+      } catch (err) {
+        console.error('Проверка токена не удалась', err);
+        await this.logout();
       }
     },
+
+    async logout() {
+      if (this.token) {
+        try {
+          await api.post('/logout', {}, { headers: { Authorization: `Bearer ${this.token}` } });
+        } catch (err) {
+          console.error('Ошибка при logout', err);
+        }
+      }
+      this.token = '';
+      this.user = null;
+      this.isAuthChecked = true;
+      localStorage.removeItem('token');
+    },
   },
-})
+});
