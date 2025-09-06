@@ -26,29 +26,29 @@
     <div class="flex gap-6 flex-wrap">
       <div class="flex-1 min-w-[400px]">
         <IncomeTable
-  :incomes="incomes"
-  :articles="articles"
-  :office-id="selectedOfficeId"
-  :filter-date="filterDate"
-  @refresh="fetchData"
-/>
+          :incomes="incomes"
+          :articles="articles"
+          :office-id="selectedOfficeId"
+          :filter-date="filterDate"
+          @refresh="fetchData"
+        />
       </div>
       <div class="flex-1 min-w-[400px]">
         <ExpenseTable
-  :expenses="expenses"
-  :articles="articles"
-  :users="users"
-  :office-id="selectedOfficeId"
-  :filter-date="filterDate"
-  @refresh="fetchData"
-/>
+          :expenses="expenses"
+          :articles="articles"
+          :users="users"
+          :office-id="selectedOfficeId"
+          :filter-date="filterDate"
+          @refresh="fetchData"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch } from 'vue';
 import api from '@/axios';
 import IncomeTable from '@/components/IncomeTable.vue';
 import ExpenseTable from '@/components/ExpenseTable.vue';
@@ -58,22 +58,20 @@ const userStore = useUserStore();
 
 const offices = ref<any[]>([]);
 const selectedOfficeId = ref<number | null>(null);
-const filterDate = ref<string>(new Date().toISOString().slice(0, 10)); // по умолчанию сегодня
+const filterDate = ref<string>(new Date().toISOString().slice(0, 10));
 
 const users = ref<any[]>([]);
 const incomes = ref<any[]>([]);
 const expenses = ref<any[]>([]);
 const articles = ref<any[]>([]);
-const balance = ref<number>(0); // теперь приходит из API
+const balance = ref<number>(0);
 
-// Заголовки с токеном
 const authHeaders = () => ({
   Authorization: `Bearer ${userStore.token}`,
 });
 
 const fetchData = async () => {
   try {
-    // Получаем офисы, статьи и пользователей
     const [officeRes, articlesRes, usersRes, financeRes] = await Promise.all([
       api.get('/offices', { headers: authHeaders() }),
       api.get('/articles', { headers: authHeaders() }),
@@ -84,9 +82,9 @@ const fetchData = async () => {
       }),
     ]);
 
-    offices.value = officeRes.data;
-    articles.value = Array.isArray(articlesRes.data.data) ? articlesRes.data.data : articlesRes.data;
-    users.value = Array.isArray(usersRes.data.data) ? usersRes.data.data : usersRes.data;
+    offices.value = officeRes.data.data || officeRes.data;
+    articles.value = articlesRes.data.data || articlesRes.data;
+    users.value = usersRes.data.data || usersRes.data;
 
     incomes.value = financeRes.data.incomes ?? [];
     expenses.value = financeRes.data.expenses ?? [];
@@ -101,7 +99,6 @@ const fetchData = async () => {
   }
 };
 
-// Перезагрузка при изменении фильтров
+// Загрузка данных сразу один раз и при изменении фильтров
 watch([selectedOfficeId, filterDate], fetchData, { immediate: true });
-onMounted(fetchData);
 </script>

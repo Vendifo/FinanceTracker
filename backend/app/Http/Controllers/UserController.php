@@ -8,7 +8,10 @@ use App\Interfaces\Services\UserServiceinterface;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
+use Illuminate\Validation\ValidationException;
 
 use App\Models\User;
 use App\Models\Role;
@@ -140,4 +143,20 @@ class UserController extends Controller
 
         return $this->apiResponse($user, 'Роль назначена');
     }
+
+
+    public function changePassword(Request $request, User $user): JsonResponse
+{
+    $request->validate([
+        'new_password' => 'required|string|min:6|confirmed',
+        'current_password' => 'sometimes|string',
+    ]);
+
+    $this->userService->changePassword($user, $request->only('current_password','new_password'));
+
+    return $this->apiResponse(null, 'Пароль успешно изменён');
+}
+
+
+
 }

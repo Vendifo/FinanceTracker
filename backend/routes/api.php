@@ -21,6 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/current', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // Смена пароля конкретного пользователя (для админа)
+    Route::post('users/{user}/change-password', [UserController::class, 'changePassword']);
+
+
+
     Route::post('users/{user}/assign-role', [UserController::class, 'assignRole']);
 
     Route::apiResource('users', UserController::class);

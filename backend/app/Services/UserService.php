@@ -7,6 +7,8 @@ use App\Interfaces\Services\UserServiceinterface;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Role;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Auth;
 
 class UserService implements UserServiceinterface
 {
@@ -71,4 +73,19 @@ class UserService implements UserServiceinterface
 
         return $user->fresh();
     }
+
+
+    public function changePassword(User $user, array $data): bool
+{
+    // Меняем свой пароль — проверяем current_password
+    if ($user->id === Auth::id() && isset($data['current_password'])) {
+        if (!Hash::check($data['current_password'], $user->password)) {
+            throw ValidationException::withMessages(['current_password' => 'Неверный текущий пароль']);
+        }
+    }
+
+    $user->password = Hash::make($data['new_password']);
+    return $user->save();
+}
+
 }

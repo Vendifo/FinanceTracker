@@ -4,6 +4,7 @@ namespace App\Interfaces\Services;
 
 
 use App\Models\User;
+
 interface UserServiceinterface
 {
     public function all();
@@ -19,4 +20,5 @@ interface UserServiceinterface
      * @return User
      */
     public function assignRole(User $user, int $roleId): User;
+public function changePassword(User $user, array $data): bool;
 }

@@ -26,23 +26,26 @@ export const useUserStore = defineStore('user', {
       localStorage.removeItem('token')
     },
     async register(name: string, email: string, password: string, passwordConfirmation: string) {
-  await api.post('/register', {
-    name,
-    email,
-    password,
-    password_confirmation: passwordConfirmation
-  })
-  // Ничего не сохраняем в state, токен придёт только при логине
-},
+      await api.post('/register', {
+        name,
+        email,
+        password,
+        password_confirmation: passwordConfirmation,
+      })
+      // Ничего не сохраняем в state, токен придёт только при логине
+    },
 
     async checkToken() {
+      if (this.isAuthChecked) return // предотвращает повторные запросы
+
       const token = localStorage.getItem('token')
       if (!token) throw new Error('Нет токена')
 
       try {
         const res = await api.get('/current', { headers: { Authorization: `Bearer ${token}` } })
-        this.user = res.data.data.user // если сервер возвращает в data.user
+        this.user = res.data.data.user
         this.token = token
+        this.isAuthChecked = true // обязательно выставить после успешного запроса
       } catch {
         await this.logout()
         throw new Error('Токен недействителен')

@@ -45,38 +45,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import api from '@/axios'
-import { useUserStore } from '@/stores/userStore'
+import { ref } from 'vue';
+import api from '@/axios';
+import { useUserStore } from '@/stores/userStore';
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
-const props = defineProps<{ incomes: any[], articles: any[], officeId: number | null, filterDate: string }>()
-const emits = defineEmits(['refresh'])
+const props = defineProps<{ incomes: any[], articles: any[], officeId: number | null, filterDate: string }>();
+const emits = defineEmits(['refresh']);
 
-const form = ref({ description: '', amount: 0, article_id: '' })
+const form = ref({ description: '', amount: 0, article_id: '' });
 
-// Заголовки с токеном
 const authHeaders = () => ({
   Authorization: `Bearer ${userStore.token}`
-})
+});
 
 const getArticleName = (id: number) => {
-  const article = props.articles.find(a => a.id == id)
-  return article ? article.name : '-'
+  const article = props.articles.find(a => a.id === id);
+  return article ? article.name : '-';
 }
 
 const saveIncome = async () => {
-  if (!form.value.description || !form.value.amount || !form.value.article_id) {
-    return alert('Заполните все поля!');
-  }
-  if (!props.officeId) return alert('Выберите офис для добавления дохода!');
+  if (!form.value.description || !form.value.amount || !form.value.article_id) return alert('Заполните все поля!');
+  if (!props.officeId) return alert('Выберите офис!');
 
   try {
     await api.post('/incomes', {
       ...form.value,
       office_id: props.officeId,
-      created_at: props.filterDate || new Date().toISOString().slice(0, 10) // дата из фильтра
+      created_at: props.filterDate || new Date().toISOString().slice(0, 10)
     }, { headers: authHeaders() });
 
     form.value = { description: '', amount: 0, article_id: '' };
@@ -87,14 +84,13 @@ const saveIncome = async () => {
   }
 };
 
-
 const deleteIncome = async (id: number) => {
   try {
-    await api.delete(`/incomes/${id}`, { headers: authHeaders() })
-    emits('refresh')
+    await api.delete(`/incomes/${id}`, { headers: authHeaders() });
+    emits('refresh');
   } catch (err) {
-    console.error(err)
-    alert('Ошибка при удалении')
+    console.error(err);
+    alert('Ошибка при удалении');
   }
-}
+};
 </script>

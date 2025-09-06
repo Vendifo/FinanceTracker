@@ -8,12 +8,15 @@ class UpdateUserRequest extends FormRequest
 {
     public function rules()
     {
-        $id = $this->route('id'); // ID пользователя из маршрута
+        $user = $this->route('user');
+        $id = $user instanceof \App\Models\User ? $user->id : $user;
 
         return [
-            'name' => 'sometimes|required|string|max:255',
+            'first_name' => 'sometimes|required|string|max:255',
+            'last_name' => 'sometimes|nullable|string|max:255',
+            'middle_name' => 'sometimes|nullable|string|max:255',
             'email' => "sometimes|required|email|unique:users,email,{$id}",
-            'password' => 'sometimes|required|string|min:6',
+            'password' => 'sometimes|nullable|string|min:6',
         ];
     }
 }

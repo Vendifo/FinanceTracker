@@ -53,12 +53,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import api from '@/axios'
 import { useUserStore } from '@/stores/userStore'
 
+// store
 const userStore = useUserStore()
 
+// props из родителя
 const props = defineProps<{
   expenses: any[],
   articles: any[],
@@ -66,38 +68,42 @@ const props = defineProps<{
   officeId: number | null,
   filterDate: string
 }>()
+
 const emits = defineEmits(['refresh'])
 
+// форма
 const form = ref({ description: '', amount: 0, article_id: '', user_id: '' })
 
-// Заголовки с токеном
+// заголовки с токеном
 const authHeaders = () => ({ Authorization: `Bearer ${userStore.token}` })
 
+// вспомогательные функции для отображения
 const getArticleName = (id: number) => props.articles.find(a => a.id == id)?.name ?? '-'
 const getUserName = (id: number) => props.users.find(u => u.id == id)?.name ?? '-'
 
+// добавить расход
 const saveExpense = async () => {
   if (!form.value.description || !form.value.amount || !form.value.article_id || !form.value.user_id) {
-    return alert('Заполните все поля!');
+    return alert('Заполните все поля!')
   }
-  if (!props.officeId) return alert('Выберите офис для добавления расхода!');
+  if (!props.officeId) return alert('Выберите офис!')
 
   try {
     await api.post('/expenses', {
       ...form.value,
       office_id: props.officeId,
-      created_at: props.filterDate || new Date().toISOString().slice(0, 10) // дата из фильтра
-    }, { headers: authHeaders() });
+      created_at: props.filterDate || new Date().toISOString().slice(0, 10)
+    }, { headers: authHeaders() })
 
-    form.value = { description: '', amount: 0, article_id: '', user_id: '' };
-    emits('refresh');
+    form.value = { description: '', amount: 0, article_id: '', user_id: '' }
+    emits('refresh') // уведомляем родителя перезагрузить данные
   } catch (err) {
-    console.error(err);
-    alert('Ошибка при добавлении');
+    console.error(err)
+    alert('Ошибка при добавлении')
   }
-};
+}
 
-
+// удалить расход
 const deleteExpense = async (id: number) => {
   try {
     await api.delete(`/expenses/${id}`, { headers: authHeaders() })
