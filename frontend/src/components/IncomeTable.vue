@@ -45,52 +45,64 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import api from '@/axios';
-import { useUserStore } from '@/stores/userStore';
+import { ref } from 'vue'
+import api from '@/axios'
+import { useUserStore } from '@/stores/userStore'
+import { useAlert } from '@/composables/useAlert'
 
-const userStore = useUserStore();
+const { showAlert } = useAlert()
+const userStore = useUserStore()
 
-const props = defineProps<{ incomes: any[], articles: any[], officeId: number | null, filterDate: string }>();
-const emits = defineEmits(['refresh']);
+const props = defineProps<{ incomes: any[], articles: any[], officeId: number | null, filterDate: string }>()
+const emits = defineEmits(['refresh'])
 
-const form = ref({ description: '', amount: 0, article_id: '' });
+const form = ref({ description: '', amount: 0, article_id: '' })
 
 const authHeaders = () => ({
   Authorization: `Bearer ${userStore.token}`
-});
+})
 
 const getArticleName = (id: number) => {
-  const article = props.articles.find(a => a.id === id);
-  return article ? article.name : '-';
+  const article = props.articles.find(a => a.id === id)
+  return article ? article.name : '-'
 }
 
 const saveIncome = async () => {
-  if (!form.value.description || !form.value.amount || !form.value.article_id) return alert('Заполните все поля!');
-  if (!props.officeId) return alert('Выберите офис!');
+  if (!form.value.description || !form.value.amount || !form.value.article_id) {
+    return showAlert({ type: 'warning', title: 'Внимание', message: 'Заполните все поля!' })
+  }
+  if (!props.officeId) {
+    return showAlert({ type: 'warning', title: 'Внимание', message: 'Выберите офис!' })
+  }
 
   try {
-    await api.post('/incomes', {
-      ...form.value,
-      office_id: props.officeId,
-      created_at: props.filterDate || new Date().toISOString().slice(0, 10)
-    }, { headers: authHeaders() });
+    await api.post(
+      '/incomes',
+      {
+        ...form.value,
+        office_id: props.officeId,
+        created_at: props.filterDate || new Date().toISOString().slice(0, 10)
+      },
+      { headers: authHeaders() }
+    )
 
-    form.value = { description: '', amount: 0, article_id: '' };
-    emits('refresh');
-  } catch (err) {
-    console.error(err);
-    alert('Ошибка при добавлении');
+    form.value = { description: '', amount: 0, article_id: '' }
+    showAlert({ type: 'success', title: 'Успех', message: 'Приход успешно добавлен!' })
+    emits('refresh')
+  } catch (err: any) {
+    console.error(err)
+    showAlert({ type: 'error', title: 'Ошибка', message: err.response?.data?.message || 'Ошибка при добавлении' })
   }
-};
+}
 
 const deleteIncome = async (id: number) => {
   try {
-    await api.delete(`/incomes/${id}`, { headers: authHeaders() });
-    emits('refresh');
-  } catch (err) {
-    console.error(err);
-    alert('Ошибка при удалении');
+    await api.delete(`/incomes/${id}`, { headers: authHeaders() })
+    showAlert({ type: 'success', title: 'Успех', message: 'Приход успешно удалён!' })
+    emits('refresh')
+  } catch (err: any) {
+    console.error(err)
+    showAlert({ type: 'error', title: 'Ошибка', message: err.response?.data?.message || 'Ошибка при удалении' })
   }
-};
+}
 </script>

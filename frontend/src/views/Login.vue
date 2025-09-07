@@ -17,8 +17,6 @@
         </div>
       </div>
     </div>
-
-    <NotificationModal v-model="modal.visible" :type="modal.type" :title="modal.title" :message="modal.message" :duration="3000"/>
   </div>
 </template>
 
@@ -28,42 +26,36 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import InputField from '@/components/InputField.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
-import NotificationModal from '@/components/NotificationModal.vue'
+import { useAlert } from '@/composables/useAlert'
 
-// форма
+const { showAlert } = useAlert()
+// форма входа
 const form = reactive({ email: '', password: '' })
 const isLoading = ref(false)
-
-// уведомления
-const modal = reactive({
-  visible: false,
-  type: 'error' as 'error' | 'success',
-  title: '',
-  message: '',
-})
 
 const router = useRouter()
 const userStore = useUserStore()
 
+// вход пользователя
 const login = async () => {
   if (isLoading.value) return
   isLoading.value = true
+
   try {
     await userStore.login(form.email, form.password)
+    showAlert({ type: 'success', title: 'Успех!', message: 'Вы успешно вошли в систему.' })
     router.push('/dashboard')
   } catch (err: unknown) {
-    modal.type = 'error'
-    modal.title = 'Ошибка!'
-    if ((err as any)?.response?.data?.message) {
-      modal.message = (err as any).response.data.message
-    } else {
-      modal.message = (err as Error).message
-    }
-    modal.visible = true
+    showAlert({
+      type: 'error',
+      title: 'Ошибка!',
+      message: (err as any)?.response?.data?.message || (err as Error).message || 'Не удалось войти'
+    })
   } finally {
     isLoading.value = false
   }
 }
 
+// переход на страницу регистрации
 const goToRegister = () => router.push('/register')
 </script>

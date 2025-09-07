@@ -70,6 +70,9 @@ const authHeaders = () => ({
   Authorization: `Bearer ${userStore.token}`,
 });
 
+import { useAlert } from '@/composables/useAlert'
+
+const { showAlert } = useAlert()
 const fetchData = async () => {
   try {
     const [officeRes, articlesRes, usersRes, financeRes] = await Promise.all([
@@ -89,15 +92,22 @@ const fetchData = async () => {
     incomes.value = financeRes.data.incomes ?? [];
     expenses.value = financeRes.data.expenses ?? [];
     balance.value = financeRes.data.balance ?? 0;
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
     incomes.value = [];
     expenses.value = [];
     articles.value = [];
     users.value = [];
     balance.value = 0;
+
+    showAlert({
+      type: 'error',
+      title: 'Ошибка',
+      message: err.response?.data?.message || 'Не удалось загрузить данные финансового дашборда'
+    });
   }
 };
+
 
 // Загрузка данных сразу один раз и при изменении фильтров
 watch([selectedOfficeId, filterDate], fetchData, { immediate: true });

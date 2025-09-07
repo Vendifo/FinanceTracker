@@ -19,14 +19,6 @@
         </div>
       </div>
     </div>
-
-    <NotificationModal
-      v-model="modal.visible"
-      :type="modal.type"
-      :title="modal.title"
-      :message="modal.message"
-      :duration="3000"
-    />
   </div>
 </template>
 
@@ -36,8 +28,9 @@ import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import InputField from '@/components/InputField.vue'
 import PrimaryButton from '@/components/PrimaryButton.vue'
-import NotificationModal from '@/components/NotificationModal.vue'
+import { useAlert } from '@/composables/useAlert'
 
+const { showAlert } = useAlert()
 // форма регистрации
 const form = reactive({
   name: '',
@@ -47,18 +40,10 @@ const form = reactive({
 })
 
 const isLoading = ref(false)
-
-// модальные уведомления
-const modal = reactive({
-  visible: false,
-  type: 'success' as 'success' | 'error',
-  title: '',
-  message: '',
-})
-
 const router = useRouter()
 const userStore = useUserStore()
 
+// универсальная функция регистрации
 const register = async () => {
   if (isLoading.value) return
   isLoading.value = true
@@ -71,21 +56,20 @@ const register = async () => {
       form.passwordConfirmation
     )
 
-    modal.type = 'success'
-    modal.title = 'Успех!'
-    modal.message = 'Пользователь успешно зарегистрирован.'
-    modal.visible = true
+    showAlert({
+      type: 'success',
+      title: 'Успех!',
+      message: 'Пользователь успешно зарегистрирован.'
+    })
 
+    // перенаправление через 1.5 секунды
     setTimeout(() => router.push('/login'), 1500)
   } catch (err: unknown) {
-    modal.type = 'error'
-    modal.title = 'Ошибка!'
-    if ((err as any)?.response?.data?.message) {
-      modal.message = (err as any).response.data.message
-    } else {
-      modal.message = (err as Error).message
-    }
-    modal.visible = true
+    showAlert({
+      type: 'error',
+      title: 'Ошибка!',
+      message: (err as any)?.response?.data?.message || (err as Error).message || 'Произошла ошибка'
+    })
   } finally {
     isLoading.value = false
   }

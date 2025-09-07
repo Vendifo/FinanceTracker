@@ -10,17 +10,49 @@
         </button>
       </div>
 
-      <UsersTable :users="users" :roles="roles" :loading="loading" :error="error" @edit="openEdit" @delete="openDelete"
-        @change-password="openChangePassword" />
+      <UsersTable
+        :users="users"
+        :roles="roles"
+        :loading="loading"
+        :error="error"
+        @edit="openEdit"
+        @delete="openDelete"
+        @change-password="openChangePassword"
+      />
 
-      <EditUserModal v-if="editUserModal" :user="editUserModal" :roles="roles" @close="closeEdit" @save="saveUser" />
+      <EditUserModal
+  v-if="editUserModal"
+  :key="editUserModal.id"
+  :user="editUserModal"
+  :roles="roles"
+  @close="closeEdit"
+  @save="saveUser"
+/>
 
-      <ChangePasswordModal v-if="changePasswordModal" :user="changePasswordModal" @close="closeChangePassword"
-        @save="handleChangePassword" />
 
-      <DeleteUserModal v-if="deleteUserModal" :user="deleteUserModal" @close="closeDelete" @confirm="removeUser" />
 
-      <AddUserModal v-if="addUserModal" @close="closeAddUser" @save="createUser" />
+      <AddUserModal
+        v-if="addUserModal"
+        :roles="roles"
+        @close="closeAddUser"
+        @save="createUser"
+      />
+
+      <DeleteUserModal
+        v-if="deleteUserModal"
+        :user="deleteUserModal"
+        @close="closeDelete"
+        @confirm="removeUser"
+      />
+
+      <ChangePasswordModal
+        v-if="changePasswordModal"
+        :user="changePasswordModal"
+        @close="closeChangePassword"
+        @save="handleChangePassword"
+      />
+
+      <RolesTable /> <!-- Вставляем таблицу ролей -->
     </main>
   </div>
 </template>
@@ -30,17 +62,20 @@ import { ref } from 'vue'
 import Header from '@/components/Header.vue'
 import UsersTable from '@/components/users/UsersTable.vue'
 import EditUserModal from '@/components/users/EditUserModal.vue'
+import AddUserModal from '@/components/users/AddUserModal.vue'
 import DeleteUserModal from '@/components/users/DeleteUserModal.vue'
 import ChangePasswordModal from '@/components/users/ChangePasswordModal.vue'
-import AddUserModal from '@/components/users/AddUserModal.vue'
+import RolesTable from '@/components/users/Roles.vue'
+
 import { useUsers } from '@/composables/useUsers'
 import { useModals } from '@/composables/useModals'
 import api from '@/axios'
 import { useUserStore } from '@/stores/userStore'
 
-// --- store и composables ---
 const userStore = useUserStore()
 const { users, roles, loading, error, saveUser, removeUser, updatePassword } = useUsers()
+
+// модалки пользователей
 const {
   editUserModal,
   deleteUserModal,
@@ -53,44 +88,55 @@ const {
   closeChangePassword
 } = useModals()
 
-// --- модалка добавления ---
 const addUserModal = ref(false)
 const openAddUser = () => addUserModal.value = true
 const closeAddUser = () => addUserModal.value = false
 
-// --- создание нового пользователя ---
-const createUser = async (payload: {
-  name: string
-  email: string
-  password: string
-  password_confirmation: string
-}) => {
+import { useAlert } from '@/composables/useAlert'
+
+const { showAlert } = useAlert()
+const createUser = async (payload: { name: string; email: string; password: string; password_confirmation: string }) => {
   try {
-    const userStore = useUserStore()
     const res = await api.post('/users', payload, {
       headers: { Authorization: `Bearer ${userStore.token}` }
     })
     users.value.push(res.data.data)
-    alert('Пользователь создан')
+
+    showAlert({
+      type: 'success',
+      title: 'Успех',
+      message: 'Пользователь успешно создан'
+    })
+
     closeAddUser()
   } catch (err: any) {
-    alert(err.response?.data?.message || err.message)
+    showAlert({
+      type: 'error',
+      title: 'Ошибка',
+      message: err.response?.data?.message || err.message
+    })
   }
 }
 
-// --- смена пароля ---
-const handleChangePassword = async (payload: {
-  current_password?: string
-  new_password: string
-  new_password_confirmation: string
-}) => {
+const handleChangePassword = async (payload: { current_password?: string; new_password: string; new_password_confirmation: string }) => {
   if (!changePasswordModal.value) return
   try {
     await updatePassword(changePasswordModal.value.id, payload)
-    alert('Пароль успешно изменён')
+
+    showAlert({
+      type: 'success',
+      title: 'Успех',
+      message: 'Пароль успешно изменён'
+    })
+
     closeChangePassword()
   } catch (err: any) {
-    alert(err.response?.data?.message || err.message)
+    showAlert({
+      type: 'error',
+      title: 'Ошибка',
+      message: err.response?.data?.message || err.message
+    })
   }
 }
+
 </script>

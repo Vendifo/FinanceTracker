@@ -7,8 +7,18 @@
       </p>
 
       <div class="flex justify-end gap-2">
-        <button @click="emit('close')" class="px-3 py-1 rounded border">Отмена</button>
-        <button @click="emit('confirm', user.id)" class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600">Удалить</button>
+        <button
+          @click="emit('close')"
+          class="px-3 py-1 rounded border"
+        >
+          Отмена
+        </button>
+        <button
+          @click="emit('confirm', user.id)"
+          class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+        >
+          Удалить
+        </button>
       </div>
     </div>
   </div>
@@ -20,11 +30,9 @@ import type { User } from '@/api/users'
 // Props
 const props = defineProps<{ user: User }>()
 
-// Emit с правильной типизацией
+// Emit с типизацией
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'confirm', userId: number): void
 }>()
-
-// В шаблоне используем emit(), а не $emit
 </script>

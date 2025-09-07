@@ -56,7 +56,9 @@
 import { ref } from 'vue'
 import api from '@/axios'
 import { useUserStore } from '@/stores/userStore'
+import { useAlert } from '@/composables/useAlert'
 
+const { showAlert } = useAlert()
 // store
 const userStore = useUserStore()
 
@@ -84,9 +86,11 @@ const getUserName = (id: number) => props.users.find(u => u.id == id)?.name ?? '
 // добавить расход
 const saveExpense = async () => {
   if (!form.value.description || !form.value.amount || !form.value.article_id || !form.value.user_id) {
-    return alert('Заполните все поля!')
+    return showAlert({ type: 'warning', title: 'Внимание', message: 'Заполните все поля!' })
   }
-  if (!props.officeId) return alert('Выберите офис!')
+  if (!props.officeId) {
+    return showAlert({ type: 'warning', title: 'Внимание', message: 'Выберите офис!' })
+  }
 
   try {
     await api.post('/expenses', {
@@ -96,21 +100,22 @@ const saveExpense = async () => {
     }, { headers: authHeaders() })
 
     form.value = { description: '', amount: 0, article_id: '', user_id: '' }
-    emits('refresh') // уведомляем родителя перезагрузить данные
-  } catch (err) {
+    emits('refresh')
+    showAlert({ type: 'success', title: 'Успех', message: 'Расход успешно добавлен' })
+  } catch (err: any) {
     console.error(err)
-    alert('Ошибка при добавлении')
+    showAlert({ type: 'error', title: 'Ошибка', message: err.response?.data?.message || 'Ошибка при добавлении расхода' })
   }
 }
 
-// удалить расход
 const deleteExpense = async (id: number) => {
   try {
     await api.delete(`/expenses/${id}`, { headers: authHeaders() })
     emits('refresh')
-  } catch (err) {
+    showAlert({ type: 'success', title: 'Успех', message: 'Расход удалён' })
+  } catch (err: any) {
     console.error(err)
-    alert('Ошибка при удалении')
+    showAlert({ type: 'error', title: 'Ошибка', message: err.response?.data?.message || 'Ошибка при удалении расхода' })
   }
 }
 </script>
