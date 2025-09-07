@@ -2,50 +2,54 @@
   <div class="w-full min-h-screen flex flex-col bg-gray-50 p-6">
     <!-- Фильтры -->
     <div class="flex gap-4 mb-6 flex-wrap items-end">
-      <div>
-        <label class="block mb-1 font-semibold">Офис</label>
-        <select v-model="selectedOfficeId" class="border px-2 py-1 rounded w-full">
-          <option :value="null">Все офисы</option>
-          <option v-for="office in offices" :key="office.id" :value="office.id">
-            {{ office.name }}
-          </option>
-        </select>
+      <div class="flex flex-wrap gap-4 items-end">
+        <!-- Фильтр по офису -->
+        <div class="flex flex-col w-60">
+          <label class="mb-1 font-semibold text-gray-700">Офис</label>
+          <div class="relative">
+            <select v-model="selectedOfficeId"
+              class="appearance-none w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white">
+              <option :value="null">Все офисы</option>
+              <option v-for="office in offices" :key="office.id" :value="office.id">
+                {{ office.name }}
+              </option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+              <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Фильтр по дате -->
+        <div class="flex flex-col w-52">
+          <label class="mb-1 font-semibold text-gray-700">До даты</label>
+          <input type="date" v-model="filterDate"
+            class="w-full border border-gray-300 rounded-lg px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white" />
+        </div>
       </div>
 
-      <div>
-        <label class="block mb-1 font-semibold">До даты</label>
-        <input type="date" v-model="filterDate" class="border px-2 py-1 rounded" />
-      </div>
 
       <div class="ml-auto text-lg font-bold">
-        Баланс: {{ balance }}
+        Баланс: {{ balance }} ₽
       </div>
     </div>
 
     <!-- Таблицы доходов и расходов -->
     <div class="flex gap-6 flex-wrap">
       <div class="flex-1 min-w-[400px]">
-        <IncomeTable
-          :incomes="incomes"
-          :articles="articles"
-          :office-id="selectedOfficeId"
-          :filter-date="filterDate"
-          @refresh="fetchData"
-        />
+        <IncomeTable :incomes="incomes" :articles="articles" :office-id="selectedOfficeId" :filter-date="filterDate"
+          @refresh="fetchData" />
       </div>
       <div class="flex-1 min-w-[400px]">
-        <ExpenseTable
-          :expenses="expenses"
-          :articles="articles"
-          :users="users"
-          :office-id="selectedOfficeId"
-          :filter-date="filterDate"
-          @refresh="fetchData"
-        />
+        <ExpenseTable :expenses="expenses" :articles="articles" :users="users" :office-id="selectedOfficeId"
+          :filter-date="filterDate" @refresh="fetchData" />
       </div>
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';

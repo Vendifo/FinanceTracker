@@ -12,6 +12,12 @@ class StoreUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
+
+            // Доп. поля (необязательные)
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'middle_name' => 'nullable|string|max:255',
+            'role_id' => 'nullable|exists:roles,id',
         ];
     }
 }
