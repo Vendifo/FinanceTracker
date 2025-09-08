@@ -30,65 +30,65 @@
         </div>
 
         <div class="w-full flex gap-6">
-  <!-- Левая колонка: график -->
-  <div class="flex-1 bg-white p-4 rounded-lg shadow">
-    <h2 class="text-lg font-semibold mb-2">Динамика доходов и расходов</h2>
-    <div v-if="loading" class="text-gray-500">Загрузка...</div>
-    <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <div v-else-if="chartData" class="h-96">
-      <Line :data="chartData" :options="chartOptions" />
-    </div>
-    <div v-else class="text-gray-500">Нет данных</div>
-  </div>
+          <!-- Левая колонка: график -->
+          <div class="flex-1 bg-white p-4 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-2">Динамика доходов и расходов</h2>
+            <div v-if="loading" class="text-gray-500">Загрузка...</div>
+            <div v-else-if="error" class="text-red-500">{{ error }}</div>
+            <div v-else-if="chartData" class="h-96">
+              <Line :data="chartData" :options="chartOptions" />
+            </div>
+            <div v-else class="text-gray-500">Нет данных</div>
+          </div>
 
-  <!-- Правая колонка -->
-<div class="w-64 bg-gray-50 p-4 rounded-lg shadow flex flex-col gap-4">
-  <h2 class="text-lg font-semibold mb-2">Баланс за период</h2>
+          <!-- Правая колонка -->
+          <div class="w-64 bg-gray-50 p-4 rounded-lg shadow flex flex-col gap-4">
+            <h2 class="text-lg font-semibold mb-2">Баланс за период</h2>
 
-  <!-- Общий баланс -->
-  <div v-if="loadingBalance" class="text-gray-500">Загрузка...</div>
-  <div v-else-if="errorBalance" class="text-red-500">{{ errorBalance }}</div>
-  <div v-else-if="balanceData" class="flex flex-col gap-2 text-center">
-    <div>
-      <p class="text-sm text-gray-500">Доходы</p>
-      <p class="text-xl font-bold text-green-600">{{ balanceData.income }} ₽</p>
-    </div>
-    <div>
-      <p class="text-sm text-gray-500">Расходы</p>
-      <p class="text-xl font-bold text-red-600">{{ balanceData.expense }} ₽</p>
-    </div>
-    <div :class="[balanceData.balance >= 0 ? 'text-green-700' : 'text-red-700']">
-      <p class="text-sm text-gray-500">Баланс</p>
-      <p class="text-2xl font-bold">{{ balanceData.balance }} ₽</p>
-    </div>
-  </div>
+            <!-- Общий баланс -->
+            <div v-if="loadingBalance" class="text-gray-500">Загрузка...</div>
+            <div v-else-if="errorBalance" class="text-red-500">{{ errorBalance }}</div>
+            <div v-else-if="balanceData" class="flex flex-col gap-2 text-center">
+              <div>
+                <p class="text-sm text-gray-500">Доходы</p>
+                <p class="text-xl font-bold text-green-600">{{ formatMoney(balanceData.income) }} ₽</p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Расходы</p>
+                <p class="text-xl font-bold text-red-600">{{ formatMoney(balanceData.expense) }} ₽</p>
+              </div>
+              <div :class="[balanceData.balance >= 0 ? 'text-green-700' : 'text-red-700']">
+                <p class="text-sm text-gray-500">Баланс</p>
+                <p class="text-2xl font-bold">{{ formatMoney(balanceData.balance) }} ₽</p>
+              </div>
+            </div>
 
-  <!-- Новый блок: по офисам -->
-  <div class="border-t pt-4">
-    <h3 class="text-md font-semibold mb-2">По офисам</h3>
-    <div v-if="loadingByOffice" class="text-gray-500">Загрузка...</div>
-    <div v-else-if="errorByOffice" class="text-red-500">{{ errorByOffice }}</div>
-    <table v-else class="w-full text-sm">
-      <thead>
-        <tr class="text-gray-500 text-left">
-          <th class="py-1">Офис</th>
-          <th class="py-1 text-right">₽</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="o in byOfficeData" :key="o.office_id" class="border-t">
-          <td class="py-1">{{ o.office_name }}</td>
-          <td class="py-1 text-right font-medium"
-              :class="[o.balance >= 0 ? 'text-green-600' : 'text-red-600']">
-            {{ o.balance }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+            <!-- Новый блок: по офисам -->
+            <div class="border-t pt-4">
+              <h3 class="text-md font-semibold mb-2">По офисам</h3>
+              <div v-if="loadingByOffice" class="text-gray-500">Загрузка...</div>
+              <div v-else-if="errorByOffice" class="text-red-500">{{ errorByOffice }}</div>
+              <table v-else class="w-full text-sm">
+                <thead>
+                  <tr class="text-gray-500 text-left">
+                    <th class="py-1">Офис</th>
+                    <th class="py-1 text-right">₽</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="o in byOfficeData" :key="o.office_id" class="border-t">
+                    <td class="py-1">{{ o.office_name }}</td>
+                    <td class="py-1 text-right font-medium"
+                      :class="[o.balance >= 0 ? 'text-green-600' : 'text-red-600']">
+                      {{ formatMoney(o.balance) }} ₽
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-</div>
+        </div>
 
 
 
@@ -163,7 +163,7 @@ async function loadByOffice() {
   byOfficeData.value = []
 
   try {
-    const params: any = { date_from: dateFrom.value, date_to: dateTo.value }
+    const params: any = {}
     if (selectedArticle.value) params.article_id = selectedArticle.value
 
     const res = await api.get('/finance/by-office', { params, headers: authHeaders() })
@@ -174,6 +174,13 @@ async function loadByOffice() {
   } finally {
     loadingByOffice.value = false
   }
+}
+
+function formatMoney(value: number): string {
+  return value.toLocaleString('ru-RU', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
 }
 
 

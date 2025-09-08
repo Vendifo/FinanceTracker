@@ -11,9 +11,9 @@
           <PrimaryButton :disabled="isLoading" @click="login">
             {{ isLoading ? 'Входим...' : 'Войти' }}
           </PrimaryButton>
-          <button @click="goToRegister" class="flex-1 px-4 py-3 border rounded text-gray-700 hover:bg-gray-200 transition">
+          <!-- <button @click="goToRegister" class="flex-1 px-4 py-3 border rounded text-gray-700 hover:bg-gray-200 transition">
             Зарегистрироваться
-          </button>
+          </button> -->
         </div>
       </div>
     </div>

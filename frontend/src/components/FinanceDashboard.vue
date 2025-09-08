@@ -32,7 +32,7 @@
 
 
       <div class="ml-auto text-lg font-bold">
-        Баланс: {{ balance }} ₽
+        Баланс:  {{ balance.toFixed(2) }}  ₽
       </div>
     </div>
 
