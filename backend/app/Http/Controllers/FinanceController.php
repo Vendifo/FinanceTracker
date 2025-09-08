@@ -46,39 +46,110 @@ class FinanceController extends Controller
     }
 
     public function index(Request $request)
-{
-    $officeId = $request->office_id;
-    $date = $request->date ?? now()->toDateString();
+    {
+        $officeId = $request->office_id;
+        $date = $request->date ?? now()->toDateString();
 
-    // Для таблиц: только выбранная дата
-    $recordsDate = $date; // отображаем за этот день
+        // Для таблиц: только выбранная дата
+        $recordsDate = $date; // отображаем за этот день
 
-    $incomesToday = Income::query()
-        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
-        ->whereDate('created_at', $recordsDate)
-        ->get();
+        $incomesToday = Income::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->whereDate('created_at', $recordsDate)
+            ->get();
 
-    $expensesToday = Expense::query()
-        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
-        ->whereDate('created_at', $recordsDate)
-        ->get();
+        $expensesToday = Expense::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->whereDate('created_at', $recordsDate)
+            ->get();
 
-    // Для баланса: до выбранной даты
-    $totalIncome = Income::query()
-        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
-        ->whereDate('created_at', '<=', $recordsDate)
-        ->sum('amount');
+        // Для баланса: до выбранной даты
+        $totalIncome = Income::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->whereDate('created_at', '<=', $recordsDate)
+            ->sum('amount');
 
-    $totalExpense = Expense::query()
-        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
-        ->whereDate('created_at', '<=', $recordsDate)
-        ->sum('amount');
+        $totalExpense = Expense::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->whereDate('created_at', '<=', $recordsDate)
+            ->sum('amount');
 
-    return response()->json([
-        'incomes' => $incomesToday,
-        'expenses' => $expensesToday,
-        'balance' => $totalIncome - $totalExpense
-    ]);
-}
+        return response()->json([
+            'incomes' => $incomesToday,
+            'expenses' => $expensesToday,
+            'balance' => $totalIncome - $totalExpense
+        ]);
+    }
 
+    public function dynamics(Request $request)
+    {
+        $officeId = $request->office_id;
+        $articleId = $request->article_id;
+        $from = $request->date_from ?? now()->startOfMonth()->toDateString();
+        $to = $request->date_to ?? now()->toDateString();
+
+        $incomes = Income::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->when($articleId, fn($q) => $q->where('article_id', $articleId))
+            ->whereBetween('created_at', [$from, $to])
+            ->selectRaw("DATE(created_at) as date, SUM(amount) as total")
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        $expenses = Expense::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->when($articleId, fn($q) => $q->where('article_id', $articleId))
+            ->whereBetween('created_at', [$from, $to])
+            ->selectRaw("DATE(created_at) as date, SUM(amount) as total")
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
+
+        return response()->json([
+            'filters' => [
+                'office_id' => $officeId,
+                'article_id' => $articleId,
+                'date_from' => $from,
+                'date_to' => $to,
+            ],
+            'incomes' => $incomes,
+            'expenses' => $expenses,
+        ]);
+    }
+    public function balancePeriod(Request $request)
+    {
+        $officeId = $request->office_id;
+        $articleId = $request->article_id;
+        $userId = $request->user_id;
+        $from = $request->date_from ?? now()->startOfMonth()->toDateString();
+        $to = $request->date_to ?? now()->toDateString();
+
+        $totalIncome = Income::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->when($articleId, fn($q) => $q->where('article_id', $articleId))
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->whereBetween('created_at', [$from, $to])
+            ->sum('amount');
+
+        $totalExpense = Expense::query()
+            ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+            ->when($articleId, fn($q) => $q->where('article_id', $articleId))
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->whereBetween('created_at', [$from, $to])
+            ->sum('amount');
+
+        return response()->json([
+            'filters' => [
+                'office_id' => $officeId,
+                'article_id' => $articleId,
+                'user_id' => $userId,
+                'date_from' => $from,
+                'date_to' => $to,
+            ],
+            'income' => $totalIncome,
+            'expense' => $totalExpense,
+            'balance' => $totalIncome - $totalExpense,
+        ]);
+    }
 }
