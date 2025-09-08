@@ -39,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('finance/dynamics', [FinanceController::class, 'dynamics']);
     Route::get('finance/balance-period', [FinanceController::class, 'balancePeriod']);
+    Route::get('finance/by-office', [FinanceController::class, 'byOffice']);
+
 
 
 });

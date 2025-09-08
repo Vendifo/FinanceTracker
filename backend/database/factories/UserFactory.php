@@ -2,39 +2,52 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
-    protected static ?string $password;
+    protected $model = User::class;
 
     public function definition(): array
     {
-        $firstName = fake()->firstName();
-        $lastName = fake()->lastName();
+        $roleIds = Role::pluck('id')->toArray(); // все существующие роли
+
+        $firstName = $this->faker->firstName;
+        $lastName = $this->faker->lastName;
+        $middleName = $this->faker->optional()->firstName;
 
         return [
+            'name' => $firstName . ' ' . $lastName,
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'middle_name' => null,
-            'name' => $firstName . ' ' . $lastName,
-            'email' => fake()->unique()->safeEmail(),
-            'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'middle_name' => $middleName,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => Hash::make('password'), // стандартный пароль для всех
+            'role_id' => $this->faker->randomElement($roleIds),
             'remember_token' => Str::random(10),
-            'role_id' => null,
         ];
     }
 
-    public function unverified(): static
+    // Удобные состояния
+    public function user(): Factory
     {
-        return $this->state(fn(array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        $roleId = Role::where('name', 'user')->first()->id;
+        return $this->state(fn () => ['role_id' => $roleId]);
+    }
+
+    public function manager(): Factory
+    {
+        $roleId = Role::where('name', 'manager')->first()->id;
+        return $this->state(fn () => ['role_id' => $roleId]);
+    }
+
+    public function accountant(): Factory
+    {
+        $roleId = Role::where('name', 'accountant')->first()->id;
+        return $this->state(fn () => ['role_id' => $roleId]);
     }
 }

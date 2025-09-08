@@ -152,4 +152,55 @@ class FinanceController extends Controller
             'balance' => $totalIncome - $totalExpense,
         ]);
     }
+
+    public function byOffice(Request $request)
+{
+    $from = $request->date_from ?? '1900-01-01'; // с какой даты считать
+    $to   = $request->date_to ?? now()->toDateString(); // по какую дату
+    $officeId = $request->office_id;
+
+    $queryIncomes = Income::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereBetween('created_at', [$from, $to])
+        ->selectRaw('office_id, SUM(amount) as total_income')
+        ->groupBy('office_id');
+
+    $queryExpenses = Expense::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereBetween('created_at', [$from, $to])
+        ->selectRaw('office_id, SUM(amount) as total_expense')
+        ->groupBy('office_id');
+
+    // Склеиваем доходы и расходы
+    $incomes = $queryIncomes->pluck('total_income', 'office_id');
+    $expenses = $queryExpenses->pluck('total_expense', 'office_id');
+
+    // Получаем список всех офисов (чтобы не потерялись те, где только расходы или только доходы)
+    $offices = \App\Models\Office::query()
+        ->when($officeId, fn($q) => $q->where('id', $officeId))
+        ->get();
+
+    $result = $offices->map(function ($office) use ($incomes, $expenses) {
+        $income = $incomes[$office->id] ?? 0;
+        $expense = $expenses[$office->id] ?? 0;
+
+        return [
+            'office_id'   => $office->id,
+            'office_name' => $office->name,
+            'income'      => $income,
+            'expense'     => $expense,
+            'balance'     => $income - $expense,
+        ];
+    });
+
+    return response()->json([
+        'filters' => [
+            'office_id' => $officeId,
+            'date_from' => $from,
+            'date_to'   => $to,
+        ],
+        'offices' => $result,
+    ]);
+}
+
 }
