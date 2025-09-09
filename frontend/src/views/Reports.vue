@@ -45,34 +45,36 @@
           <div class="w-64 bg-gray-50 p-4 rounded-lg shadow flex flex-col gap-4">
             <h2 class="text-lg font-semibold mb-2">Баланс за период</h2>
 
-            <!-- Общий баланс -->
-            <div v-if="loadingBalance" class="text-gray-500">Загрузка...</div>
-            <div v-else-if="errorBalance" class="text-red-500">{{ errorBalance }}</div>
-            <div v-else-if="balanceData" class="flex flex-col gap-2 text-center">
-              <div>
-                <p class="text-sm text-gray-500">Доходы</p>
-                <p class="text-xl font-bold text-green-600">{{ formatMoney(balanceData.income) }} ₽</p>
+            <!-- Общий баланс (компактный) -->
+            <div v-if="loadingBalance" class="text-gray-500 text-sm">Загрузка...</div>
+            <div v-else-if="errorBalance" class="text-red-500 text-sm">{{ errorBalance }}</div>
+            <div v-else-if="balanceData" class="flex flex-col gap-1 text-center text-sm">
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Доходы:</span>
+                <span class="font-semibold text-green-600">{{ formatMoney(balanceData.income) }} ₽</span>
               </div>
-              <div>
-                <p class="text-sm text-gray-500">Расходы</p>
-                <p class="text-xl font-bold text-red-600">{{ formatMoney(balanceData.expense) }} ₽</p>
+              <div class="flex justify-between items-center">
+                <span class="text-gray-500">Расходы:</span>
+                <span class="font-semibold text-red-600">{{ formatMoney(balanceData.expense) }} ₽</span>
               </div>
-              <div :class="[balanceData.balance >= 0 ? 'text-green-700' : 'text-red-700']">
-                <p class="text-sm text-gray-500">Баланс</p>
-                <p class="text-2xl font-bold">{{ formatMoney(balanceData.balance) }} ₽</p>
+              <div class="flex justify-between items-center font-semibold"
+                :class="[balanceData.balance >= 0 ? 'text-green-700' : 'text-red-700']">
+                <span>Баланс:</span>
+                <span>{{ formatMoney(balanceData.balance) }} ₽</span>
               </div>
             </div>
+
 
             <!-- Новый блок: по офисам -->
             <div class="border-t pt-4">
               <h3 class="text-md font-semibold mb-2">По офисам</h3>
-              <div v-if="loadingByOffice" class="text-gray-500">Загрузка...</div>
-              <div v-else-if="errorByOffice" class="text-red-500">{{ errorByOffice }}</div>
+              <div v-if="loadingByOffice" class="text-gray-500 text-sm">Загрузка...</div>
+              <div v-else-if="errorByOffice" class="text-red-500 text-sm">{{ errorByOffice }}</div>
               <table v-else class="w-full text-sm">
                 <thead>
                   <tr class="text-gray-500 text-left">
                     <th class="py-1">Офис</th>
-                    <th class="py-1 text-right">₽</th>
+                    <th class="py-1 text-right">Баланс</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -83,14 +85,18 @@
                       {{ formatMoney(o.balance) }} ₽
                     </td>
                   </tr>
+                  <tr v-if="byOfficeData.length === 0">
+                    <td colspan="2" class="text-center text-gray-500 py-2 text-sm">
+                      Данных нет
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
+
           </div>
 
         </div>
-
-
 
       </div>
     </main>
@@ -177,10 +183,8 @@ async function loadByOffice() {
 }
 
 function formatMoney(value: number): string {
-  return value.toLocaleString('ru-RU', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
+  const num = Math.round(Number(value));
+  return num.toLocaleString('ru-RU')
 }
 
 

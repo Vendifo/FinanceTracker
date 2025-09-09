@@ -1,52 +1,44 @@
 <template>
   <div class="bg-white text-gray-800 rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-2xl font-semibold">Офисы</h3>
-      <button
-        @click="openAddOffice"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-      >
-        Добавить офис
+      <h3 class="text-xl font-semibold">Офисы</h3>
+      <button @click="openAddOffice" class="p-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        title="Добавить офис">
+        <Plus class="w-5 h-5" />
       </button>
     </div>
 
     <!-- Состояния -->
-    <div v-if="loading" class="text-gray-500 mb-2">Загрузка...</div>
-    <div v-if="error" class="text-red-500 mb-2">{{ error }}</div>
+    <div v-if="loading" class="text-gray-500 mb-2 text-sm">Загрузка...</div>
+    <div v-if="error" class="text-red-500 mb-2 text-sm">{{ error }}</div>
 
     <!-- Таблица офисов -->
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50 text-gray-600 text-sm font-medium">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50 text-gray-600 font-medium">
           <tr>
-            <th class="px-4 py-2 text-left">Название</th>
-            <th class="px-4 py-2 text-left">Действия</th>
+            <th class="px-3 py-2 text-left">Название</th>
+            <th class="px-3 py-2 text-right">Действия</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="office in offices"
-            :key="office.id"
-            class="hover:bg-gray-50 transition"
-          >
-            <td class="px-4 py-3 text-gray-700">{{ office.name }}</td>
-            <td class="px-4 py-3 flex gap-2">
-              <button
-                @click="openEditOffice(office)"
-                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition"
-              >
-                Редактировать
+          <tr v-for="office in offices" :key="office.id" class="hover:bg-gray-50 transition">
+            <td class="px-3 py-2 text-gray-700">{{ office.name }}</td>
+            <td class="px-3 py-2 flex justify-end gap-2">
+              <button @click="openEditOffice(office)"
+                class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition" title="Редактировать">
+                <Edit class="w-4 h-4" />
               </button>
-              <button
-                @click="openDeleteOffice(office)"
-                class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition"
-              >
-                Удалить
+              <button @click="openDeleteOffice(office)"
+                class="p-2 bg-red-600 hover:bg-red-700 text-white rounded transition" title="Удалить">
+                <Trash2 class="w-4 h-4" />
               </button>
             </td>
           </tr>
           <tr v-if="offices.length === 0">
-            <td colspan="2" class="text-center py-4 text-gray-500">Офисов нет</td>
+            <td colspan="2" class="text-center py-4 text-gray-500 text-sm">
+              Офисов нет
+            </td>
           </tr>
         </tbody>
       </table>
@@ -58,19 +50,12 @@
       <div class="absolute inset-0 bg-white/30 backdrop-blur-sm" @click="closeAddOffice"></div>
       <div class="relative bg-white p-6 rounded-2xl shadow-xl w-96 z-10" @click.stop>
         <h3 class="text-lg font-bold mb-4">Новый офис</h3>
-        <input
-          v-model="officeForm.name"
-          type="text"
-          placeholder="Название офиса"
-          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
+        <input v-model="officeForm.name" type="text" placeholder="Название офиса"
+          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" />
         <div class="flex justify-end gap-2">
           <button @click="closeAddOffice" class="px-3 py-1 border rounded">Отмена</button>
-          <button
-            @click="createOfficeHandler"
-            :disabled="actionLoading"
-            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50"
-          >
+          <button @click="createOfficeHandler" :disabled="actionLoading"
+            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50">
             {{ actionLoading ? 'Сохраняем...' : 'Создать' }}
           </button>
         </div>
@@ -82,19 +67,12 @@
       <div class="absolute inset-0 bg-white/30 backdrop-blur-sm" @click="closeEdit"></div>
       <div class="relative bg-white p-6 rounded-2xl shadow-xl w-96 z-10" @click.stop>
         <h3 class="text-lg font-bold mb-4">Редактировать офис</h3>
-        <input
-          v-model="officeForm.name"
-          type="text"
-          placeholder="Название офиса"
-          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <input v-model="officeForm.name" type="text" placeholder="Название офиса"
+          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <div class="flex justify-end gap-2">
           <button @click="closeEdit" class="px-3 py-1 border rounded">Отмена</button>
-          <button
-            @click="updateOfficeHandler"
-            :disabled="actionLoading"
-            class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50"
-          >
+          <button @click="updateOfficeHandler" :disabled="actionLoading"
+            class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50">
             {{ actionLoading ? 'Сохраняем...' : 'Сохранить' }}
           </button>
         </div>
@@ -109,11 +87,8 @@
         <p class="mb-4">Вы действительно хотите удалить офис <strong>{{ deleteOfficeModal.name }}</strong>?</p>
         <div class="flex justify-end gap-2">
           <button @click="closeDelete" class="px-3 py-1 border rounded">Отмена</button>
-          <button
-            @click="deleteOfficeHandler"
-            :disabled="actionLoading"
-            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50"
-          >
+          <button @click="deleteOfficeHandler" :disabled="actionLoading"
+            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50">
             {{ actionLoading ? 'Удаляем...' : 'Удалить' }}
           </button>
         </div>
@@ -127,6 +102,7 @@ import { ref, onMounted } from 'vue'
 import api from '@/axios'
 import { useUserStore } from '@/stores/userStore'
 import { useAlert } from '@/composables/useAlert'
+import { Plus, Edit, Trash2 } from 'lucide-vue-next'
 
 const { showAlert } = useAlert()
 const userStore = useUserStore()

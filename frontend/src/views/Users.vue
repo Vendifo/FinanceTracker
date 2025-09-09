@@ -2,7 +2,7 @@
   <div class="min-h-screen flex flex-col bg-gray-50">
     <Header />
 
-    <main class="flex-1 p-6 w-full max-w-6xl mx-auto space-y-8">
+    <main class="flex-1 p-6 w-full max-w-7xl mx-auto space-y-8">
       <!-- Пользователи -->
       <section>
         <div class="flex justify-between items-center mb-4">

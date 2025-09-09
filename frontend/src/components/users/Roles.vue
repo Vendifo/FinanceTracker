@@ -1,26 +1,27 @@
 <template>
   <div class="bg-white text-gray-800 rounded-lg shadow p-6">
     <div class="flex justify-between items-center mb-4">
-      <h3 class="text-2xl font-semibold">Роли</h3>
+      <h3 class="text-xl font-semibold">Роли</h3>
       <button
         @click="openAddRole"
-        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        class="p-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        title="Добавить роль"
       >
-        Добавить роль
+        <Plus class="w-5 h-5" />
       </button>
     </div>
 
     <!-- Состояния -->
-    <div v-if="loading" class="text-gray-500 mb-2">Загрузка...</div>
-    <div v-if="error" class="text-red-500 mb-2">{{ error }}</div>
+    <div v-if="loading" class="text-gray-500 mb-2 text-sm">Загрузка...</div>
+    <div v-if="error" class="text-red-500 mb-2 text-sm">{{ error }}</div>
 
     <!-- Таблица ролей -->
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50 text-gray-600 text-sm font-medium">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50 text-gray-600 font-medium">
           <tr>
-            <th class="px-4 py-2 text-left">Название</th>
-            <th class="px-4 py-2 text-left">Действия</th>
+            <th class="px-3 py-2 text-left">Название</th>
+            <th class="px-3 py-2 text-right">Действия</th>
           </tr>
         </thead>
         <tbody>
@@ -29,19 +30,21 @@
             :key="role.id"
             class="hover:bg-gray-50 transition"
           >
-            <td class="px-4 py-3 text-gray-700">{{ role.name }}</td>
-            <td class="px-4 py-3 flex gap-2">
+            <td class="px-3 py-2 text-gray-700">{{ role.name }}</td>
+            <td class="px-3 py-2 flex justify-end gap-2">
               <button
                 @click="openEditRole(role)"
-                class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition"
+                class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition"
+                title="Редактировать"
               >
-                Редактировать
+                <Edit class="w-4 h-4" />
               </button>
               <button
                 @click="openDeleteRole(role)"
-                class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded transition"
+                class="p-2 bg-red-600 hover:bg-red-700 text-white rounded transition"
+                title="Удалить"
               >
-                Удалить
+                <Trash2 class="w-4 h-4" />
               </button>
             </td>
           </tr>
@@ -123,10 +126,12 @@
 import { ref, onMounted } from 'vue'
 import { useRoles } from '@/composables/useRoles'
 import { useAlert } from '@/composables/useAlert'
+import { Edit, Trash2, Plus } from 'lucide-vue-next'
 
 const { showAlert } = useAlert()
 const { roles, createRole, updateRole, deleteRole, loadRoles } = useRoles()
 
+// состояние и логика — оставляем без изменений
 const loading = ref(false)
 const error = ref<string | null>(null)
 const actionLoading = ref(false)

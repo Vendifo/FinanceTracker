@@ -31,9 +31,11 @@
       </div>
 
 
-      <div class="ml-auto text-lg font-bold">
-        Баланс:  {{ balance.toFixed(2) }}  ₽
-      </div>
+     <div class="ml-auto text-lg font-bold">
+  Баланс: {{ balance.toLocaleString('ru-RU', { maximumFractionDigits: 0 }) }} ₽
+</div>
+
+
     </div>
 
     <!-- Таблицы доходов и расходов -->
