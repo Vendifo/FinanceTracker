@@ -1,6 +1,6 @@
 <template>
   <header class="w-full bg-white shadow-md p-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-gray-800">Главная</h1>
+    <h1 class="text-xl font-bold text-gray-800">Касса крым</h1>
 
     <nav class="flex gap-6">
       <!-- Касса: все авторизованные пользователи -->
