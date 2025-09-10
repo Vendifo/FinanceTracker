@@ -14,7 +14,12 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://host.docker.internal:9000',
+        target: 'http://92.255.76.182:9000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/sanctum/csrf-cookie': {
+        target: 'http://92.255.76.182:9000',
         changeOrigin: true,
         secure: false,
       },
