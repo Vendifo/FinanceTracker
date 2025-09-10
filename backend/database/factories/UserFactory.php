@@ -35,7 +35,7 @@ class UserFactory extends Factory
     // Удобные состояния
     public function user(): Factory
     {
-        $roleId = Role::where('name', 'user')->first()->id;
+        $roleId = Role::where('name', 'admin')->first()->id;
         return $this->state(fn () => ['role_id' => $roleId]);
     }
 
