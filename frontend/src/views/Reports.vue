@@ -98,6 +98,43 @@
 
         </div>
 
+        <!-- Новый блок: по статьям -->
+        <div class="pt-4">
+          <h3 class="text-md font-semibold mb-2">По статьям</h3>
+          <div v-if="loadingByArticle" class="text-gray-500 text-sm">Загрузка...</div>
+          <div v-else-if="errorByArticle" class="text-red-500 text-sm">{{ errorByArticle }}</div>
+          <table v-else class="w-full text-sm">
+            <thead>
+              <tr class="text-gray-500 text-left">
+                <th class="py-1">Статья</th>
+                <th class="py-1 text-right">Доходы</th>
+                <th class="py-1 text-right">Расходы</th>
+                <th class="py-1 text-right">Баланс</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="a in byArticleData" :key="a.article_id" class="border-t">
+                <td class="py-1">{{ a.article_name }}</td>
+                <td class="py-1 text-right text-green-600 font-medium">
+                  {{ formatMoney(a.income) }} ₽
+                </td>
+                <td class="py-1 text-right text-red-600 font-medium">
+                  {{ formatMoney(a.expense) }} ₽
+                </td>
+                <td class="py-1 text-right font-medium" :class="[a.balance >= 0 ? 'text-green-600' : 'text-red-600']">
+                  {{ formatMoney(a.balance) }} ₽
+                </td>
+              </tr>
+              <tr v-if="byArticleData.length === 0">
+                <td colspan="4" class="text-center text-gray-500 py-2 text-sm">
+                  Данных нет
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
       </div>
     </main>
   </div>
@@ -162,6 +199,30 @@ const authHeaders = () => ({ Authorization: `Bearer ${userStore.token}` })
 const byOfficeData = ref<any[]>([])
 const loadingByOffice = ref(false)
 const errorByOffice = ref<string | null>(null)
+
+const byArticleData = ref<any[]>([])
+const loadingByArticle = ref(false)
+const errorByArticle = ref<string | null>(null)
+
+async function loadByArticle() {
+  loadingByArticle.value = true
+  errorByArticle.value = null
+  byArticleData.value = []
+
+  try {
+    const params: any = { date_from: dateFrom.value, date_to: dateTo.value }
+    if (selectedOffice.value) params.office_id = selectedOffice.value
+
+    const res = await api.get('/finance/by-article', { params, headers: authHeaders() })
+    byArticleData.value = res.data.articles
+  } catch (err: any) {
+    console.error(err)
+    errorByArticle.value = err.response?.data?.message || 'Ошибка загрузки статей'
+  } finally {
+    loadingByArticle.value = false
+  }
+}
+
 
 async function loadByOffice() {
   loadingByOffice.value = true
@@ -270,7 +331,7 @@ async function loadBalance() {
 
 // Загружаем всё
 async function loadAllData() {
-  await Promise.all([loadDynamics(), loadBalance(), loadByOffice()])
+  await Promise.all([loadDynamics(), loadBalance(), loadByOffice(), loadByArticle()])
 }
 
 // При монтировании

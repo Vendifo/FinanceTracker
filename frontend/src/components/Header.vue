@@ -3,19 +3,39 @@
     <h1 class="text-xl font-bold text-gray-800">Главная</h1>
 
     <nav class="flex gap-6">
-      <RouterLink v-for="link in links" :key="link.path" :to="link.path"
-        class="relative text-gray-700 hover:text-blue-600 transition" active-class="font-semibold text-blue-600">
-        {{ link.name }}
-        <span class="absolute left-0 -bottom-1 w-full h-0.5 bg-blue-600" v-if="$route.path === link.path"></span>
+      <!-- Касса: все авторизованные пользователи -->
+      <RouterLink to="/dashboard" class="relative text-gray-700 hover:text-blue-600 transition"
+        active-class="font-semibold text-blue-600">
+        Касса
+        <span class="absolute left-0 -bottom-1 w-full h-0.5 bg-blue-600" v-if="$route.path === '/dashboard'"></span>
       </RouterLink>
+
+      <!-- Пользователи: только admin и manager -->
+      <ProtectedRole :roles="['admin', 'manager']">
+        <RouterLink to="/users" class="relative text-gray-700 hover:text-blue-600 transition"
+          active-class="font-semibold text-blue-600">
+          Пользователи
+          <span class="absolute left-0 -bottom-1 w-full h-0.5 bg-blue-600" v-if="$route.path === '/users'"></span>
+        </RouterLink>
+      </ProtectedRole>
+
+      <!-- Отчеты: admin, manager и accountant (можно указать конкретно, например accountant) -->
+      <ProtectedRole :roles="['admin', 'manager', 'accountant']">
+        <RouterLink to="/reports" class="relative text-gray-700 hover:text-blue-600 transition"
+          active-class="font-semibold text-blue-600">
+          Отчеты
+          <span class="absolute left-0 -bottom-1 w-full h-0.5 bg-blue-600" v-if="$route.path === '/reports'"></span>
+        </RouterLink>
+      </ProtectedRole>
     </nav>
+
 
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-2">
         <div v-if="!user?.avatar"
-     class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold uppercase">
-  {{ initials }}
-</div>
+          class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold uppercase">
+          {{ initials }}
+        </div>
 
         <img v-else :src="user.avatar" alt="Avatar" class="w-8 h-8 rounded-full object-cover" />
         <span class="text-gray-800 font-medium">{{ user?.name }}</span>
@@ -32,7 +52,7 @@
 import { useUserStore } from '@/stores/userStore'
 import { useRouter, RouterLink } from 'vue-router'
 import { computed } from 'vue'
-
+import ProtectedRole from '@/components/ProtectedRole.vue'
 const userStore = useUserStore()
 const router = useRouter()
 const user = userStore.user

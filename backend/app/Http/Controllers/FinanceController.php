@@ -202,5 +202,53 @@ class FinanceController extends Controller
         'offices' => $result,
     ]);
 }
+public function byArticle(Request $request)
+{
+    $from = $request->date_from ?? '1900-01-01';
+    $to   = $request->date_to ?? now()->toDateString();
+    $officeId = $request->office_id;
+
+    // Доходы по статьям
+    $queryIncomes = Income::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereBetween('created_at', [$from, $to])
+        ->selectRaw('article_id, SUM(amount) as total_income')
+        ->groupBy('article_id');
+
+    // Расходы по статьям
+    $queryExpenses = Expense::query()
+        ->when($officeId, fn($q) => $q->where('office_id', $officeId))
+        ->whereBetween('created_at', [$from, $to])
+        ->selectRaw('article_id, SUM(amount) as total_expense')
+        ->groupBy('article_id');
+
+    $incomes = $queryIncomes->pluck('total_income', 'article_id');
+    $expenses = $queryExpenses->pluck('total_expense', 'article_id');
+
+    // Получаем список статей (чтобы вернуть даже те, где только доход или только расход)
+    $articles = \App\Models\Article::all();
+
+    $result = $articles->map(function ($article) use ($incomes, $expenses) {
+        $income = $incomes[$article->id] ?? 0;
+        $expense = $expenses[$article->id] ?? 0;
+
+        return [
+            'article_id'   => $article->id,
+            'article_name' => $article->name,
+            'income'       => $income,
+            'expense'      => $expense,
+            'balance'      => $income - $expense,
+        ];
+    });
+
+    return response()->json([
+        'filters' => [
+            'office_id' => $officeId,
+            'date_from' => $from,
+            'date_to'   => $to,
+        ],
+        'articles' => $result,
+    ]);
+}
 
 }
