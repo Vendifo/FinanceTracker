@@ -7,23 +7,14 @@
       <section>
         <div class="flex justify-between items-center mb-4">
           <h1 class="text-2xl font-bold">Пользователи</h1>
-          <button
-            @click="openAddUser"
-            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-          >
+          <button @click="openAddUser"
+            class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition">
             Добавить пользователя
           </button>
         </div>
 
-        <UsersTable
-          :users="users"
-          :roles="roles"
-          :loading="loading"
-          :error="error"
-          @edit="openEdit"
-          @delete="openDelete"
-          @change-password="openChangePassword"
-        />
+        <UsersTable :users="users" :roles="roles" :loading="loading" :error="error" @edit="openEdit"
+          @delete="openDelete" @change-password="openChangePassword" />
       </section>
 
       <!-- Сетка с таблицами -->
@@ -46,34 +37,23 @@
 
     <!-- Модалки -->
     <EditUserModal
-      v-if="editUserModal"
-      :key="editUserModal.id"
-      :user="editUserModal"
-      :roles="roles"
-      @close="closeEdit"
-      @save="saveUser"
-    />
+  v-if="editUserModal"
+  :key="editUserModal.id"
+  :user="editUserModal"
+  :roles="roles"
+  @close="closeEdit"
+  @save="handleSaveUser"
+/>
 
-    <AddUserModal
-      v-if="addUserModal"
-      :roles="roles"
-      @close="closeAddUser"
-      @save="createUser"
-    />
 
-    <DeleteUserModal
-      v-if="deleteUserModal"
-      :user="deleteUserModal"
-      @close="closeDelete"
-      @confirm="removeUser"
-    />
+    <AddUserModal v-if="addUserModal" :roles="roles" @close="closeAddUser" @save="createUser" />
 
-    <ChangePasswordModal
-      v-if="changePasswordModal"
-      :user="changePasswordModal"
-      @close="closeChangePassword"
-      @save="handleChangePassword"
-    />
+    <DeleteUserModal v-if="deleteUserModal" :user="deleteUserModal" @close="closeDelete"
+      @confirm="handleConfirmDelete" />
+
+
+    <ChangePasswordModal v-if="changePasswordModal" :user="changePasswordModal" @close="closeChangePassword"
+      @save="handleChangePassword" />
   </div>
 </template>
 
@@ -88,6 +68,7 @@ import ChangePasswordModal from '@/components/users/ChangePasswordModal.vue'
 import RolesTable from '@/components/users/Roles.vue'
 import ArticlesTable from '@/components/users/ArticlesTable.vue'
 import OfficesTable from '@/components/users/OfficesTable.vue'
+import type { User } from '@/api/users' // путь может отличаться, используйте свой
 
 import { useUsers } from '@/composables/useUsers'
 import { useModals } from '@/composables/useModals'
@@ -140,6 +121,17 @@ const createUser = async (payload: {
     })
   }
 }
+
+const handleConfirmDelete = async (userId: number) => {
+  await removeUser(userId)  // удаляем пользователя
+  closeDelete()             // закрываем модалку
+}
+
+const handleSaveUser = async (user: User) => {
+  await saveUser(user)  // обновляем пользователя
+  closeEdit()           // закрываем модалку
+}
+
 
 // Смена пароля
 const handleChangePassword = async (payload: {
