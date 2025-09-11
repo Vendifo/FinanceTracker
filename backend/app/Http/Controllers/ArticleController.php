@@ -8,23 +8,10 @@ use App\Http\Requests\UpdateArticleRequest;
 use App\Http\Resources\ArticleResource;
 use Illuminate\Http\JsonResponse;
 
-/**
- * Контроллер для работы с сущностью Article
- *
- * Отвечает за:
- * - CRUD статьи
- * - Возврат JSON-ответов
- * - Делегирование бизнес-логики сервису
- */
-class ArticleController extends Controller
+class ArticleController extends ApiController
 {
     protected ArticleServiceInterface $articleService;
 
-    /**
-     * Внедрение сервиса через конструктор
-     *
-     * @param ArticleServiceInterface $articleService
-     */
     public function __construct(ArticleServiceInterface $articleService)
     {
         $this->articleService = $articleService;
@@ -32,85 +19,71 @@ class ArticleController extends Controller
 
     /**
      * Получить список всех статей
-     *
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        // Возвращаем коллекцию статей через ресурс
-        return ArticleResource::collection($this->articleService->all());
+        $articles = $this->articleService->all();
+
+        return $this->apiResponse(
+            ArticleResource::collection($articles),
+            'Список статей получен'
+        );
     }
 
     /**
-     * Показать одну статью по ID
-     *
-     * @param int $id
-     * @return ArticleResource|JsonResponse
+     * Показать одну статью
      */
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
         $article = $this->articleService->find($id);
 
-        // Если статья не найдена, возвращаем 404
-        return $article
-            ? new ArticleResource($article)
-            : $this->notFoundResponse();
+        if (!$article) {
+            return $this->apiResponse(null, 'Статья не найдена', false, 404);
+        }
+
+        return $this->apiResponse(new ArticleResource($article), 'Статья найдена');
     }
 
     /**
-     * Создать новую статью
-     *
-     * @param StoreArticleRequest $request
-     * @return ArticleResource
+     * Создать статью
      */
-    public function store(StoreArticleRequest $request)
+    public function store(StoreArticleRequest $request): JsonResponse
     {
-        // Создаём статью через сервис
         $article = $this->articleService->create($request->validated());
 
-        // Возвращаем ресурс с кодом 201 (создано)
-        return (new ArticleResource($article))->response()->setStatusCode(201);
+        return $this->apiResponse(
+            new ArticleResource($article),
+            'Статья создана',
+            true,
+            201
+        );
     }
 
     /**
-     * Обновить существующую статью
-     *
-     * @param UpdateArticleRequest $request
-     * @param int $id
-     * @return ArticleResource|JsonResponse
+     * Обновить статью
      */
-    public function update(UpdateArticleRequest $request, int $id)
+    public function update(UpdateArticleRequest $request, int $id): JsonResponse
     {
         $article = $this->articleService->update($id, $request->validated());
 
-        return $article
-            ? new ArticleResource($article)
-            : $this->notFoundResponse();
+        if (!$article) {
+            return $this->apiResponse(null, 'Статья не найдена', false, 404);
+        }
+
+        return $this->apiResponse(new ArticleResource($article), 'Статья обновлена');
     }
 
     /**
      * Удалить статью
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         $deleted = $this->articleService->delete($id);
 
-        return $deleted
-            ? response()->json(['message' => 'Article deleted'], 200)
-            : $this->notFoundResponse();
-    }
+        if (!$deleted) {
+            return $this->apiResponse(null, 'Статья не найдена', false, 404);
+        }
 
-    /**
-     * Универсальный ответ при ошибке 404
-     *
-     * @param string $message
-     * @return JsonResponse
-     */
-    private function notFoundResponse(string $message = 'Article not found'): JsonResponse
-    {
-        return response()->json(['message' => $message], 404);
+        return $this->apiResponse(null, 'Статья удалена');
     }
 }

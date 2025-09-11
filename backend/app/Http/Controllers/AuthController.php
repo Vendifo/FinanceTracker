@@ -5,42 +5,28 @@ namespace App\Http\Controllers;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
- * Контроллер для аутентификации пользователей.
- * Включает регистрацию, логин, logout и получение текущего пользователя.
+ * Контроллер аутентификации пользователей
+ *
+ * Методы:
+ * - register() - регистрация нового пользователя
+ * - login() - вход и выдача токена
+ * - me() - получение текущего пользователя
+ * - logout() - удаление токена
  */
-class AuthController extends Controller
+class AuthController extends ApiController
 {
     /**
-     * Универсальный метод формирования JSON-ответа API.
+     * Регистрация нового пользователя
      *
-     * @param mixed $data Данные для ответа
-     * @param string $message Сообщение
-     * @param bool $success Статус успеха
-     * @param int $status HTTP-код
-     * @return JsonResponse
-     */
-    private function apiResponse($data = null, string $message = '', bool $success = true, int $status = 200): JsonResponse
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ], $status);
-    }
-
-    /**
-     * Регистрация нового пользователя.
-     *
-     * @param RegisterRequest $request
-     * @return JsonResponse
+     * Проверяем уникальность email и валидность пароля
      */
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -52,27 +38,26 @@ class AuthController extends Controller
 
         return $this->apiResponse(
             ['user' => new UserResource($user)],
-            'Пользователь успешно создан',
+            'Пользователь успешно зарегистрирован',
             true,
             201
         );
     }
 
     /**
-     * Логин пользователя и выдача токена.
-     *
-     * @param LoginRequest $request
-     * @return JsonResponse
-     * @throws ValidationException
+     * Логин пользователя и выдача Sanctum токена
      */
     public function login(LoginRequest $request): JsonResponse
     {
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Неверный email или пароль.'],
-            ]);
+            return $this->apiResponse(
+                null,
+                'Неверный email или пароль',
+                false,
+                401
+            );
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
@@ -82,32 +67,52 @@ class AuthController extends Controller
                 'user' => new UserResource($user),
                 'token' => $token
             ],
-            'Успешный вход'
+            'Вход выполнен успешно'
         );
     }
 
     /**
-     * Получение текущего авторизованного пользователя.
-     *
-     * @param Request $request
-     * @return JsonResponse
+     * Получение текущего авторизованного пользователя
+     * Требует middleware 'auth:sanctum'
      */
     public function me(Request $request): JsonResponse
     {
+        if (!$request->user()) {
+            return $this->apiResponse(
+                null,
+                'Не авторизован',
+                false,
+                401
+            );
+        }
+
         return $this->apiResponse(
-            ['user' => new UserResource($request->user())]
+            ['user' => new UserResource($request->user())],
+            'Текущий пользователь'
         );
     }
 
     /**
-     * Logout — удаление текущего токена пользователя.
-     *
-     * @param Request $request
-     * @return Response Возвращает пустой ответ с кодом 204
+     * Logout пользователя
      */
-    public function logout(Request $request): Response
+    public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->noContent();
+        $user = $request->user();
+
+        if (!$user) {
+            return $this->apiResponse(
+                null,
+                'Не авторизован',
+                false,
+                401
+            );
+        }
+
+        $user->currentAccessToken()?->delete();
+
+        return $this->apiResponse(
+            null,
+            'Выход выполнен успешно'
+        );
     }
 }
