@@ -16,6 +16,8 @@ class UserResource extends JsonResource
             'middle_name' => $this->middle_name,
             'email' => $this->email,
             'role' => $this->role ? new RoleResource($this->role) : null,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
         ];
     }
 }

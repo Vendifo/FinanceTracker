@@ -38,7 +38,7 @@ class AuthController extends ApiController
 
         return $this->apiResponse(
             ['user' => new UserResource($user)],
-            'Пользователь успешно зарегистрирован',
+            'User successfully registered',
             true,
             201
         );
@@ -54,7 +54,7 @@ class AuthController extends ApiController
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->apiResponse(
                 null,
-                'Неверный email или пароль',
+                'Invalid email or password',
                 false,
                 401
             );
@@ -67,7 +67,7 @@ class AuthController extends ApiController
                 'user' => new UserResource($user),
                 'token' => $token
             ],
-            'Вход выполнен успешно'
+            'Login successful'
         );
     }
 
@@ -77,18 +77,21 @@ class AuthController extends ApiController
      */
     public function me(Request $request): JsonResponse
     {
-        if (!$request->user()) {
+        $user = $request->user();
+
+        if (!$user) {
             return $this->apiResponse(
                 null,
-                'Не авторизован',
+                'Not authenticated',
                 false,
                 401
             );
         }
 
         return $this->apiResponse(
-            ['user' => new UserResource($request->user())],
-            'Текущий пользователь'
+            ['user' => new UserResource($user)],
+            'Current user',
+            true
         );
     }
 
@@ -102,7 +105,7 @@ class AuthController extends ApiController
         if (!$user) {
             return $this->apiResponse(
                 null,
-                'Не авторизован',
+                'Not authenticated',
                 false,
                 401
             );
@@ -112,7 +115,8 @@ class AuthController extends ApiController
 
         return $this->apiResponse(
             null,
-            'Выход выполнен успешно'
+            'Logout successful',
+            true
         );
     }
 }
