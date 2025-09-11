@@ -3,50 +3,114 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\Services\ArticleServiceInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreArticleRequest;
+use App\Http\Requests\UpdateArticleRequest;
+use App\Http\Resources\ArticleResource;
+use Illuminate\Http\JsonResponse;
 
+/**
+ * Контроллер для работы с сущностью Article
+ *
+ * Отвечает за:
+ * - CRUD статьи
+ * - Возврат JSON-ответов
+ * - Делегирование бизнес-логики сервису
+ */
 class ArticleController extends Controller
 {
     protected ArticleServiceInterface $articleService;
 
+    /**
+     * Внедрение сервиса через конструктор
+     *
+     * @param ArticleServiceInterface $articleService
+     */
     public function __construct(ArticleServiceInterface $articleService)
     {
         $this->articleService = $articleService;
     }
 
+    /**
+     * Получить список всех статей
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function index()
     {
-        return response()->json($this->articleService->all());
+        // Возвращаем коллекцию статей через ресурс
+        return ArticleResource::collection($this->articleService->all());
     }
 
-    public function show($id)
+    /**
+     * Показать одну статью по ID
+     *
+     * @param int $id
+     * @return ArticleResource|JsonResponse
+     */
+    public function show(int $id)
     {
         $article = $this->articleService->find($id);
-        if (!$article) return response()->json(['message' => 'Article not found'], 404);
-        return response()->json($article, 200);
+
+        // Если статья не найдена, возвращаем 404
+        return $article
+            ? new ArticleResource($article)
+            : $this->notFoundResponse();
     }
 
-    public function store(Request $request)
+    /**
+     * Создать новую статью
+     *
+     * @param StoreArticleRequest $request
+     * @return ArticleResource
+     */
+    public function store(StoreArticleRequest $request)
     {
-        $request->validate(['name' => 'required|string|max:100']);
-        $article = $this->articleService->create($request->only('name'));
-        return response()->json($article, 201);
+        // Создаём статью через сервис
+        $article = $this->articleService->create($request->validated());
+
+        // Возвращаем ресурс с кодом 201 (создано)
+        return (new ArticleResource($article))->response()->setStatusCode(201);
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Обновить существующую статью
+     *
+     * @param UpdateArticleRequest $request
+     * @param int $id
+     * @return ArticleResource|JsonResponse
+     */
+    public function update(UpdateArticleRequest $request, int $id)
     {
-        $request->validate(['name' => 'required|string|max:100']);
-        $article = $this->articleService->update($id,$request->only('name'));
+        $article = $this->articleService->update($id, $request->validated());
 
-        if (!$article) return response()->json(['message' => 'Article not found'], 404);
-        return response()->json($article, 200);
-
+        return $article
+            ? new ArticleResource($article)
+            : $this->notFoundResponse();
     }
 
-    public function destroy($id)
+    /**
+     * Удалить статью
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
     {
         $deleted = $this->articleService->delete($id);
-        if (!$deleted) return response()->json(['message' => 'Article not found'], 404);
-        return response()->json(['message' => 'Article deleted'], 200);
+
+        return $deleted
+            ? response()->json(['message' => 'Article deleted'], 200)
+            : $this->notFoundResponse();
+    }
+
+    /**
+     * Универсальный ответ при ошибке 404
+     *
+     * @param string $message
+     * @return JsonResponse
+     */
+    private function notFoundResponse(string $message = 'Article not found'): JsonResponse
+    {
+        return response()->json(['message' => $message], 404);
     }
 }
