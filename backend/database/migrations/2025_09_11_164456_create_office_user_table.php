@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreignId('office_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
 
-            $table->uniqid(['user_id', 'office_id']);
+            // Уникальный индекс для пары user_id + office_id
+            $table->unique(['user_id', 'office_id']);
         });
     }
 

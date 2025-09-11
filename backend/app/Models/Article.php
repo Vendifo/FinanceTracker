@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Модель Article
@@ -13,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Article extends Model
 {
+
+    use HasFactory;
+
     /**
      * Разрешённые для массового заполнения поля.
      * Позволяет использовать методы create() и update() безопасно.
