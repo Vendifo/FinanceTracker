@@ -10,13 +10,11 @@ use App\Models\Office;
 class OfficeRepository implements OfficeRepositoryInterface
 {
 
-    protected OfficeRepositoryInterface $officeRepository;
 
-    public function __construct(OfficeRepositoryInterface $officeRepository)
+      public function __construct()
     {
-        $this->officeRepository = $officeRepository;
+        // пусто
     }
-
     /**
      * Получить все офисы
      *
