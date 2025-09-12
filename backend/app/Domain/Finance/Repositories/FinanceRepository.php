@@ -59,8 +59,13 @@ class FinanceRepository implements FinanceRepositoryInterface
 
     public function byOffice(array $filters = [])
     {
-        $from = $filters['from'] ?? '1900-01-01';
-        $to   = $filters['to'] ?? now()->toDateString();
+        $from = $filters['from'] ?? $filters['date_from'] ?? '1900-01-01';
+        $to   = $filters['to'] ?? $filters['date_to'] ?? now()->toDateString();
+
+        // Приводим даты к диапазону дня
+        $from = date('Y-m-d 00:00:00', strtotime($from));
+        $to   = date('Y-m-d 23:59:59', strtotime($to));
+
         $officeId = $filters['office_id'] ?? null;
 
         $incomes = Income::query()
@@ -97,8 +102,13 @@ class FinanceRepository implements FinanceRepositoryInterface
 
     public function byArticle(array $filters = [])
     {
-        $from = $filters['from'] ?? '1900-01-01';
-        $to   = $filters['to'] ?? now()->toDateString();
+        $from = $filters['from'] ?? $filters['date_from'] ?? '1900-01-01';
+        $to   = $filters['to'] ?? $filters['date_to'] ?? now()->toDateString();
+
+        // Приводим даты к диапазону дня
+        $from = date('Y-m-d 00:00:00', strtotime($from));
+        $to   = date('Y-m-d 23:59:59', strtotime($to));
+
         $officeId = $filters['office_id'] ?? null;
 
         $incomes = Income::query()
@@ -115,7 +125,8 @@ class FinanceRepository implements FinanceRepositoryInterface
             ->groupBy('article_id')
             ->pluck('total_expense', 'article_id');
 
-        $articles = Article::all();
+        $articleIds = array_unique(array_merge($incomes->keys()->toArray(), $expenses->keys()->toArray()));
+        $articles = Article::whereIn('id', $articleIds)->get();
 
         return $articles->map(function ($article) use ($incomes, $expenses) {
             $income = $incomes[$article->id] ?? 0;

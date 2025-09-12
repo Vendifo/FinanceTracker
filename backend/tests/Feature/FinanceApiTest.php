@@ -113,39 +113,44 @@ public function it_returns_incomes_and_expenses_for_index()
             ->assertJsonFragment(['income' => 300, 'expense' => 100, 'balance' => 200]);
     }
 
-    #[Test]
-    public function it_returns_by_office_and_by_article()
+#[Test]
+public function it_returns_by_office_and_by_article()
 {
     $user = $this->actingUser();
     $office = Office::factory()->create();
     $article = Article::factory()->create();
-    $today = now()->format('Y-m-d');
 
-    Income::factory()->create([
-        'amount' => 200,
-        'office_id' => $office->id,
-        'article_id' => $article->id,
-        'created_at' => $today,
-    ]);
+    $today = now()->startOfDay();
 
-    Expense::factory()->create([
-        'amount' => 50,
-        'office_id' => $office->id,
-        'article_id' => $article->id,
-        'user_id' => $user->id,
-        'created_at' => $today,
-    ]);
+Income::factory()->create([
+    'amount' => 200,
+    'office_id' => $office->id,
+    'article_id' => $article->id,
+    'created_at' => $today,
+]);
 
-    $this->actingAs($user);
+Expense::factory()->create([
+    'amount' => 50,
+    'office_id' => $office->id,
+    'article_id' => $article->id,
+    'user_id' => $user->id,
+    'created_at' => $today,
+]);
 
-    $responseOffice = $this->getJson('/api/finance/by-office?office_id=' . $office->id);
-    $responseArticle = $this->getJson('/api/finance/by-article?office_id=' . $office->id);
+
+    $this->actingAs($user, 'sanctum');
+
+    $today = now()->toDateString();
+
+$responseOffice = $this->getJson('/api/finance/by-office?office_id=' . $office->id . '&date_from=' . $today . '&date_to=' . $today);
+$responseArticle = $this->getJson('/api/finance/by-article?office_id=' . $office->id . '&date_from=' . $today . '&date_to=' . $today);
+
 
     $responseOffice->assertStatus(200)
         ->assertJsonPath('offices.0.balance', 150);
 
     $responseArticle->assertStatus(200)
-        ->assertJsonPath('offices.0.balance', 150);
+    ->assertJsonPath('articles.0.balance', 150); // <-- исправлено
 }
 
 

@@ -51,26 +51,28 @@ class FinanceServiceTest extends TestCase
     }
 
     #[Test]
-    public function it_calls_repository_methods_for_incomes_expenses_and_period()
-    {
-        $filters = ['office_id' => 1];
+public function it_calls_repository_methods_for_incomes_expenses_and_period()
+{
+    $filters = ['office_id' => 1];
 
-        $this->repository->shouldReceive('incomes')->with($filters)->once()->andReturn([]);
-        $this->repository->shouldReceive('expenses')->with($filters)->once()->andReturn([]);
-        $this->repository->shouldReceive('balanceByPeriod')->with($filters)->once()->andReturn([]);
-        $this->repository->shouldReceive('byOffice')->with($filters)->once()->andReturn([]);
-        $this->repository->shouldReceive('byArticle')->with($filters)->once()->andReturn([]);
+    $this->repository->shouldReceive('incomes')->with($filters)->once()->andReturn([]);
+    $this->repository->shouldReceive('expenses')->with($filters)->once()->andReturn([]);
+    $this->repository->shouldReceive('balanceByPeriod')->with($filters)->once()->andReturn([]);
+    $this->repository->shouldReceive('byOffice')->with($filters)->once()->andReturn([]);
+    $this->repository->shouldReceive('byArticle')->with($filters)->once()->andReturn([]);
 
-        $this->service->incomes($filters);
-        $this->service->expenses($filters);
-        $this->service->balanceByPeriod($filters);
-        $this->service->byOffice($filters);
-        $this->service->byArticle($filters);
-    }
+    $this->service->incomes($filters);
+    $this->service->expenses($filters);
+    $this->service->balanceByPeriod($filters);
+    $this->service->byOffice($filters);
+    $this->service->byArticle($filters);
 
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
-    }
+    // Проверяем, что методы действительно вызваны
+    $this->repository->shouldHaveReceived('incomes')->with($filters)->once();
+    $this->repository->shouldHaveReceived('expenses')->with($filters)->once();
+    $this->repository->shouldHaveReceived('balanceByPeriod')->with($filters)->once();
+    $this->repository->shouldHaveReceived('byOffice')->with($filters)->once();
+    $this->repository->shouldHaveReceived('byArticle')->with($filters)->once();
+}
+
 }
