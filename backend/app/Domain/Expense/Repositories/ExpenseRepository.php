@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Domain\Expense\Repositories;
 
-use App\Interfaces\Repositories\ExpenseRepositoryInterface;
+use App\Domain\Expense\Repositories\ExpenseRepositoryInterface;
 use App\Models\Expense;
 use Illuminate\Database\Eloquent\Collection;
 

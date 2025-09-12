@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Domain\Article\Services;
 
-use App\Interfaces\Services\ArticleServiceInterface;
-use App\Repositories\ArticleRepository;
+use App\Domain\Article\Services\ArticleServiceInterface;
+use App\Domain\Article\Repositories\ArticleRepository;
 use App\Models\Article;
 use Illuminate\Database\Eloquent\Collection;
 

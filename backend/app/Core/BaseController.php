@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Core;
 
 use Illuminate\Routing\Controller as Controller;
 use Illuminate\Http\JsonResponse;

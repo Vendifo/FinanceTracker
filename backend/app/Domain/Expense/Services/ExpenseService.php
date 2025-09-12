@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Domain\Expense\Services;
 
-use App\Interfaces\Repositories\ExpenseRepositoryInterface;
-use App\Interfaces\Services\ExpenseServiceInterface;
+use App\Domain\Expense\Repositories\ExpenseRepositoryInterface;
+use App\Domain\Expense\Services\ExpenseServiceInterface;
 use App\Models\Expense;
 use Illuminate\Database\Eloquent\Collection;
 

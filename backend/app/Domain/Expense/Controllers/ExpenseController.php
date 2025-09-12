@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Domain\Expense\Controllers;
 
-use App\Interfaces\Services\ExpenseServiceInterface;
-use App\Http\Requests\ExpenseRequest;
-use App\Http\Resources\ExpenseResource;
+use App\Domain\Expense\Services\ExpenseServiceInterface;
+use App\Domain\Expense\Requests\ExpenseRequest;
+use App\Domain\Expense\Resources\ExpenseResource;
 use Illuminate\Http\JsonResponse;
+
+use App\Core\BaseController;
 
 /**
  * Контроллер для управления расходами

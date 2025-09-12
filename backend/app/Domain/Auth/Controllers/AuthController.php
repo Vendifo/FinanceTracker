@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Domain\Auth\Controllers;
 
-use App\Http\Requests\RegisterRequest;
-use App\Http\Requests\LoginRequest;
-use App\Http\Resources\UserResource;
+use App\Domain\Auth\Requests\LoginRequest;
+use App\Domain\Auth\Requests\RegisterRequest;
+use App\Domain\User\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Response;
+
+use App\Core\BaseController;
 
 /**
  * Контроллер аутентификации пользователей

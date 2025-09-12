@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Domain\Article\Repositories;
 
-use App\Interfaces\Repositories\ArticleRepositoryInterface;
+use App\Domain\Article\Repositories\ArticleRepositoryInterface;
 use App\Models\Article;
 use Illuminate\Database\Eloquent\Collection;
 

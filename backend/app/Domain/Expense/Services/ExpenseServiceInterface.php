@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Services;
+namespace App\Domain\Expense\Services;
 
 use App\Models\Expense;
 use Illuminate\Database\Eloquent\Collection;

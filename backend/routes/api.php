@@ -1,12 +1,13 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Domain\Article\Controllers\ArticleController;
+use App\Domain\Auth\Controllers\AuthController;
+use App\Domain\Expense\Controllers\ExpenseController;
+
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\OfficeController;
-use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\IncomeController;
-use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\UserOfficeController;
 

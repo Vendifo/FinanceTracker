@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Domain\Article\Controllers;
 
-use App\Interfaces\Services\ArticleServiceInterface;
-use App\Http\Requests\StoreArticleRequest;
-use App\Http\Requests\UpdateArticleRequest;
-use App\Http\Resources\ArticleResource;
+use App\Domain\Article\Services\ArticleServiceInterface;
+use App\Domain\Article\Requests\StoreArticleRequest;
+use App\Domain\Article\Requests\UpdateArticleRequest;
+use App\Domain\Article\Resources\ArticleResource;
+
 use Illuminate\Http\JsonResponse;
+
+use App\Core\BaseController;
 
 class ArticleController extends BaseController
 {
