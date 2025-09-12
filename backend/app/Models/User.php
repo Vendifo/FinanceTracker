@@ -40,4 +40,9 @@ class User extends Authenticatable
     {
         return $this->role_id === $roleId;
     }
+
+    public function offices()
+    {
+        return $this->belongsToMany(Office::class);
+    }
 }

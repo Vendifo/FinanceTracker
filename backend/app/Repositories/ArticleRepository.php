@@ -4,33 +4,69 @@ namespace App\Repositories;
 
 use App\Interfaces\Repositories\ArticleRepositoryInterface;
 use App\Models\Article;
-use Illuminate\Notifications\Action;
+use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * Репозиторий для работы с моделью Article.
+ *
+ * Отвечает только за доступ к данным (CRUD).
+ * Вся бизнес-логика должна находиться в сервисе.
+ */
 class ArticleRepository implements ArticleRepositoryInterface
 {
-    public function all()
+    /**
+     * Получить все статьи.
+     *
+     * @return Collection|Article[]
+     */
+    public function all(): Collection
     {
         return Article::all();
     }
 
-    public function find($id)
+    /**
+     * Найти статью по ID.
+     *
+     * @param int $id
+     * @return Article|null
+     */
+    public function find(int $id): ?Article
     {
         return Article::find($id);
     }
 
-    public function create(array $data)
+    /**
+     * Создать новую статью.
+     *
+     * @param array $data
+     * @return Article
+     */
+    public function create(array $data): Article
     {
         return Article::create($data);
     }
 
-    public function update(Article $article, array $data)
+    /**
+     * Обновить существующую статью.
+     *
+     * @param Article $article
+     * @param array $data
+     * @return Article
+     */
+    public function update(Article $article, array $data): Article
     {
         $article->update($data);
         return $article;
     }
 
-    public function delete(Article $article)
+    /**
+     * Удалить статью.
+     *
+     * @param Article $article
+     * @return bool
+     */
+    public function delete(Article $article): bool
     {
-        return $article->delete();
+        return (bool) $article->delete();
     }
 }
