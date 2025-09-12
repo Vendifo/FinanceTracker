@@ -4,12 +4,12 @@ use App\Domain\Article\Controllers\ArticleController;
 use App\Domain\Auth\Controllers\AuthController;
 use App\Domain\Expense\Controllers\ExpenseController;
 use App\Domain\Finance\Controllers\FinanceController;
+use App\Domain\Income\Controllers\IncomeController;
+use App\Domain\Office\Controllers\OfficeController;
+use App\Domain\Role\Controllers\RoleController;
+use App\Domain\User\Controllers\UserController;
+use App\Domain\UserOffice\Controllers\UserOfficeController;
 
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\OfficeController;
-use App\Http\Controllers\IncomeController;
-use App\Http\Controllers\UserOfficeController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -25,8 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Смена пароля конкретного пользователя (для админа)
     Route::post('users/{user}/change-password', [UserController::class, 'changePassword']);
-
-
 
     Route::post('users/{user}/assign-role', [UserController::class, 'assignRole']);
 
@@ -46,6 +44,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('finance/by-article', [FinanceController::class, 'byArticle']);
 
+    // Список офисов конкретного пользователя
+    Route::get('users/{user}/offices', [UserOfficeController::class, 'index']);
+
+    // Обновление офисов пользователя
+    Route::put('users/{user}/offices', [UserOfficeController::class, 'update']);
+
+    // Переключение активного офиса текущего пользователя
+    Route::post('users/switch-office', [UserOfficeController::class, 'switchOffice']);
+
+    // Текущий активный офис
+    Route::get('users/current-office', [UserOfficeController::class, 'currentOffice']);
 
 });
-

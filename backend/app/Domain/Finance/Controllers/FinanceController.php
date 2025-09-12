@@ -9,8 +9,19 @@ use App\Domain\Finance\Resources\FinanceSummaryResource;
 
 class FinanceController extends BaseController
 {
+    /**
+     * Конструктор контроллера FinanceController
+     *
+     * @param FinanceService $service Сервис для работы с финансовыми данными
+     */
     public function __construct(protected FinanceService $service) {}
 
+    /**
+     * Возвращает финансовую сводку (summary) по фильтрам
+     *
+     * @param FinanceRequest $request Запрос с фильтрами (office_id, article_id, date_from, date_to)
+     * @return FinanceSummaryResource
+     */
     public function summary(FinanceRequest $request)
     {
         $filters = $request->validated();
@@ -24,6 +35,12 @@ class FinanceController extends BaseController
         return new FinanceSummaryResource($result);
     }
 
+    /**
+     * Возвращает список доходов и расходов за определенный день
+     *
+     * @param FinanceRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(FinanceRequest $request)
     {
         $filters = $request->validated();
@@ -38,6 +55,12 @@ class FinanceController extends BaseController
         ]);
     }
 
+    /**
+     * Возвращает динамику доходов и расходов за период
+     *
+     * @param FinanceRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function dynamics(FinanceRequest $request)
     {
         $filters = $request->validated();
@@ -51,6 +74,12 @@ class FinanceController extends BaseController
         ]);
     }
 
+    /**
+     * Возвращает баланс за период
+     *
+     * @param FinanceRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function balancePeriod(FinanceRequest $request)
     {
         $filters = $request->validated();
@@ -62,6 +91,12 @@ class FinanceController extends BaseController
         ] + $this->service->balanceByPeriod($filters));
     }
 
+    /**
+     * Возвращает финансовые показатели по офисам
+     *
+     * @param FinanceRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function byOffice(FinanceRequest $request)
     {
         $filters = $request->validated();
@@ -74,6 +109,12 @@ class FinanceController extends BaseController
         ]);
     }
 
+    /**
+     * Возвращает финансовые показатели по статьям
+     *
+     * @param FinanceRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function byArticle(FinanceRequest $request)
     {
         $filters = $request->validated();

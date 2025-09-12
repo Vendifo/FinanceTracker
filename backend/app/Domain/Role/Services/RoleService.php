@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Domain\Role\Services;
 
-use App\Interfaces\Services\RoleServiceInterface;
-use App\Repositories\RoleRepository;
+use App\Domain\Role\Services\RoleServiceInterface;
+use App\Domain\Role\Repositories\RoleRepository;
 use App\Models\Role;
+use App\Domain\Role\Repositories\RoleRepositoryInterface;
 
 /**
  * Сервисный слой для работы с ролями.
@@ -12,18 +13,13 @@ use App\Models\Role;
  */
 class RoleService implements RoleServiceInterface
 {
-    /** @var RoleRepository Репозиторий для работы с ролями */
-    protected RoleRepository $roleRepository;
+    protected RoleRepositoryInterface $roleRepository;
 
-    /**
-     * Конструктор
-     *
-     * @param RoleRepository $roleRepository
-     */
-    public function __construct(RoleRepository $roleRepository)
+    public function __construct(RoleRepositoryInterface $roleRepository)
     {
         $this->roleRepository = $roleRepository;
     }
+
 
     /**
      * Получить все роли

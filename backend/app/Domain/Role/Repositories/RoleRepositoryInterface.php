@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Repositories;
+namespace App\Domain\Role\Repositories;
 
 use App\Models\Role;
 

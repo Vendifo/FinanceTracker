@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Interfaces\Services;
+namespace App\Domain\Role\Services;
 
 /**
  * Интерфейс сервиса для работы с ролями.

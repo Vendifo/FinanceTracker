@@ -1,9 +1,13 @@
 <?php
 
-namespace App\Interfaces\Repositories;
+namespace App\Domain\Income\Repositories;
 
 use App\Models\Income;
 
+/**
+ * Интерфейс репозитория для работы с доходами.
+ * Определяет базовые CRUD методы.
+ */
 interface IncomeRepositoryInterface
 {
     public function all();

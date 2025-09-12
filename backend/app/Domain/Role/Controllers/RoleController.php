@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Domain\Role\Controllers;
 
-use App\Interfaces\Services\RoleServiceInterface;
+use App\Domain\Role\Services\RoleServiceInterface;
 use Illuminate\Http\Request;
-
+use App\Core\BaseController;
 /**
  * Контроллер для работы с ролями.
  * Выполняет CRUD операции через сервисный слой.

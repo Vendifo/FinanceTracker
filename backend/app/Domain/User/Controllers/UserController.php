@@ -1,25 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Domain\User\Controllers;
 
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
-use App\Interfaces\Services\UserServiceinterface;
-use App\Http\Resources\UserResource;
+use App\Domain\User\Requests\StoreUserRequest;
+use App\Domain\User\Requests\UpdateUserRequest;
+use App\Domain\User\Services\UserServiceinterface;
+use App\Domain\User\Resources\UserResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-
-use Illuminate\Validation\ValidationException;
-
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Http\Request;
+use App\Core\BaseController;
 
 /**
  * Контроллер для управления пользователями.
- * Использует UserService для бизнес-логики.
+ * Использует UserService для обработки бизнес-логики пользователей.
  */
 class UserController extends BaseController
 {
@@ -31,7 +25,7 @@ class UserController extends BaseController
     /**
      * UserController constructor.
      *
-     * @param UserServiceinterface $userService
+     * @param UserServiceinterface $userService Сервис для работы с пользователями
      */
     public function __construct(UserServiceinterface $userService)
     {
@@ -41,7 +35,7 @@ class UserController extends BaseController
     /**
      * Получить список всех пользователей.
      *
-     * @return JsonResponse
+     * @return JsonResponse JSON с коллекцией пользователей и сообщением
      */
     public function index(): JsonResponse
     {
@@ -52,8 +46,8 @@ class UserController extends BaseController
     /**
      * Создать нового пользователя.
      *
-     * @param StoreUserRequest $request
-     * @return JsonResponse
+     * @param StoreUserRequest $request Запрос с данными для создания пользователя
+     * @return JsonResponse JSON с данными нового пользователя и статусом 201
      */
     public function store(StoreUserRequest $request): JsonResponse
     {
@@ -64,8 +58,8 @@ class UserController extends BaseController
     /**
      * Показать одного пользователя по ID.
      *
-     * @param int $id
-     * @return JsonResponse
+     * @param int $id Идентификатор пользователя
+     * @return JsonResponse JSON с данными пользователя или сообщением об ошибке
      */
     public function show(int $id): JsonResponse
     {
@@ -81,9 +75,9 @@ class UserController extends BaseController
     /**
      * Обновить существующего пользователя.
      *
-     * @param UpdateUserRequest $request
-     * @param int $id
-     * @return JsonResponse
+     * @param UpdateUserRequest $request Запрос с данными для обновления пользователя
+     * @param int $id Идентификатор пользователя
+     * @return JsonResponse JSON с обновлёнными данными пользователя или сообщением об ошибке
      */
     public function update(UpdateUserRequest $request, int $id): JsonResponse
     {
@@ -99,10 +93,9 @@ class UserController extends BaseController
     /**
      * Удалить пользователя по ID.
      *
-     * @param int $id
-     * @return JsonResponse
+     * @param int $id Идентификатор пользователя
+     * @return JsonResponse JSON с кодом 204 при успешном удалении или сообщением об ошибке
      */
-
     public function destroy(int $id): JsonResponse
     {
         $deleted = $this->userService->delete($id);
@@ -114,8 +107,14 @@ class UserController extends BaseController
         return response()->json(null, 204); // возвращаем JsonResponse с кодом 204
     }
 
-    // Назначение роли пользователю
-    public function assignRole(Request $request, User $user)
+    /**
+     * Назначить роль пользователю.
+     *
+     * @param Request $request Запрос с идентификатором роли
+     * @param User $user Пользователь, которому назначается роль
+     * @return JsonResponse JSON с данными пользователя и сообщением
+     */
+    public function assignRole(Request $request, User $user): JsonResponse
     {
         $request->validate([
             'role_id' => 'required|exists:roles,id',
@@ -126,19 +125,22 @@ class UserController extends BaseController
         return $this->apiResponse($user, 'Роль назначена');
     }
 
-
+    /**
+     * Изменить пароль пользователя.
+     *
+     * @param Request $request Запрос с текущим и новым паролем
+     * @param User $user Пользователь, чей пароль изменяется
+     * @return JsonResponse JSON с сообщением об успешном изменении пароля
+     */
     public function changePassword(Request $request, User $user): JsonResponse
-{
-    $request->validate([
-        'new_password' => 'required|string|min:6|confirmed',
-        'current_password' => 'sometimes|string',
-    ]);
+    {
+        $request->validate([
+            'new_password' => 'required|string|min:6|confirmed',
+            'current_password' => 'sometimes|string',
+        ]);
 
-    $this->userService->changePassword($user, $request->only('current_password','new_password'));
+        $this->userService->changePassword($user, $request->only('current_password', 'new_password'));
 
-    return $this->apiResponse(null, 'Пароль успешно изменён');
-}
-
-
-
+        return $this->apiResponse(null, 'Пароль успешно изменён');
+    }
 }

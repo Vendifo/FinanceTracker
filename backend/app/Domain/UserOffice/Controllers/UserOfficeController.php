@@ -1,50 +1,61 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Domain\UserOffice\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\Office;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Core\BaseController;
+use App\Models\Office;
 
+/**
+ * @package App\Domain\UserOffice\Controllers
+ */
 class UserOfficeController extends BaseController
 {
     /**
-     * Показать список офисов пользователя
+     * Список офисов пользователя
+     *
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(User $user)
     {
-        $offices = $user->offices()->get();
-
-        return response()->json([
-            'user_id' => $user->id,
-            'offices' => $offices
-        ]);
+        /** @var User $user */
+        return $this->apiResponse(
+            $user->offices()->get(),
+            'Список офисов пользователя'
+        );
     }
 
     /**
      * Обновить офисы пользователя
+     *
+     * @param Request $request
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, User $user)
     {
+        /** @var User $user */
         $request->validate([
             'offices' => 'array',
             'offices.*' => 'exists:offices,id',
         ]);
 
-        // Синхронизируем офисы
         $user->offices()->sync($request->input('offices', []));
 
-        return response()->json([
-            'message' => 'Офисы пользователя обновлены',
-            'user_id' => $user->id,
-            'offices' => $user->offices()->get()
-        ]);
+        return $this->apiResponse(
+            $user->offices()->get(),
+            'Офисы пользователя обновлены'
+        );
     }
 
     /**
      * Переключить активный офис текущего пользователя
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function switchOffice(Request $request)
     {
@@ -52,24 +63,37 @@ class UserOfficeController extends BaseController
             'office_id' => 'required|exists:offices,id',
         ]);
 
+        $user = Auth::user();
+        /** @var User $user */
         $officeId = $request->input('office_id');
 
-
-        $user = Auth::user();
-
-        // Проверяем, что пользователь имеет доступ к этому офису
         if (! $user->offices->pluck('id')->contains($officeId)) {
-            return response()->json([
-                'message' => 'Нет доступа к этому офису'
-            ], 403);
+            return $this->apiResponse(null, 'Нет доступа к этому офису', false, 403);
         }
 
-        // Сохраняем выбранный офис в сессии
         session(['current_office_id' => $officeId]);
 
-        return response()->json([
-            'message' => 'Активный офис изменён',
-            'current_office_id' => $officeId
-        ]);
+        return $this->apiResponse(
+            ['current_office_id' => $officeId],
+            'Активный офис изменён'
+        );
+    }
+
+    /**
+     * Получить активный офис текущего пользователя
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function currentOffice()
+    {
+        $user = Auth::user();
+        /** @var User $user */
+        $currentOfficeId = session('current_office_id');
+        $office = $user->offices()->find($currentOfficeId);
+
+        return $this->apiResponse([
+            'current_office_id' => $currentOfficeId,
+            'current_office' => $office,
+        ], 'Активный офис пользователя');
     }
 }

@@ -22,26 +22,27 @@ use App\Domain\Finance\Services\FinanceService;
 use App\Domain\Finance\Services\FinanceServiceInterface;
 
 
-use App\Interfaces\Services\UserServiceinterface;
-use App\Interfaces\Services\RoleServiceInterface;
-use App\Interfaces\Services\OfficeServiceInterface;
-use App\Interfaces\Services\IncomeServiceInterface;
+use App\Domain\Income\Repositories\IncomeRepository;
+use App\Domain\Income\Repositories\IncomeRepositoryInterface;
+use App\Domain\Income\Services\IncomeService;
+use App\Domain\Income\Services\IncomeServiceInterface;
 
-use App\Services\UserService;
-use App\Services\RoleService;
-use App\Services\OfficeService;
-use App\Services\IncomeService;
 
-use App\Interfaces\Repositories\UserRepositoryInterface;
-use App\Interfaces\Repositories\RoleRepositoryInterface;
-use App\Interfaces\Repositories\OfficeRepositoryInterface;
-use App\Interfaces\Repositories\IncomeRepositoryInterface;
+use App\Domain\Office\Repositories\OfficeRepository;
+use App\Domain\Office\Repositories\OfficeRepositoryInterface;
+use App\Domain\Office\Services\OfficeService;
+use App\Domain\Office\Services\OfficeServiceInterface;
 
-use App\Repositories\UserRepository;
-use App\Repositories\RoleRepository;
-use App\Repositories\OfficeRepository;
-use App\Repositories\IncomeRepository;
+use App\Domain\Role\Repositories\RoleRepository;
+use App\Domain\Role\Repositories\RoleRepositoryInterface;
+use App\Domain\Role\Services\RoleService;
+use App\Domain\Role\Services\RoleServiceInterface;
 
+
+use App\Domain\User\Repositories\UserRepository;
+use App\Domain\User\Repositories\UserRepositoryInterface;
+use App\Domain\User\Services\UserService;
+use App\Domain\User\Services\UserServiceinterface;
 
 
 class AppServiceProvider extends ServiceProvider

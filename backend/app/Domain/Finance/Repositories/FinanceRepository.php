@@ -9,6 +9,13 @@ use App\Models\Article;
 
 class FinanceRepository implements FinanceRepositoryInterface
 {
+    /**
+     * Применяет фильтры к запросу Eloquent
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array $filters Массив фильтров (office_id, article_id, user_id, date, from, to, year, month, day)
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     protected function applyFilters($query, array $filters)
     {
         if (!empty($filters['office_id'])) $query->where('office_id', $filters['office_id']);
@@ -23,31 +30,67 @@ class FinanceRepository implements FinanceRepositoryInterface
         return $query;
     }
 
+    /**
+     * Возвращает общую сумму доходов по фильтрам
+     *
+     * @param array $filters
+     * @return float
+     */
     public function totalIncome(array $filters = []): float
     {
         return (float) $this->applyFilters(Income::query(), $filters)->sum('amount');
     }
 
+    /**
+     * Возвращает общую сумму расходов по фильтрам
+     *
+     * @param array $filters
+     * @return float
+     */
     public function totalExpense(array $filters = []): float
     {
         return (float) $this->applyFilters(Expense::query(), $filters)->sum('amount');
     }
 
+    /**
+     * Возвращает баланс (доходы минус расходы) по фильтрам
+     *
+     * @param array $filters
+     * @return float
+     */
     public function balance(array $filters = []): float
     {
         return $this->totalIncome($filters) - $this->totalExpense($filters);
     }
 
+    /**
+     * Возвращает коллекцию доходов с применением фильтров
+     *
+     * @param array $filters
+     * @return \Illuminate\Support\Collection
+     */
     public function incomes(array $filters = [])
     {
         return $this->applyFilters(Income::query(), $filters)->get();
     }
 
+    /**
+     * Возвращает коллекцию расходов с применением фильтров
+     *
+     * @param array $filters
+     * @return \Illuminate\Support\Collection
+     */
     public function expenses(array $filters = [])
     {
         return $this->applyFilters(Expense::query(), $filters)->get();
     }
 
+    /**
+     * Возвращает баланс за период: доходы, расходы и итоговый баланс
+     *
+     * @param array $filters
+     * @return array
+     */
     public function balanceByPeriod(array $filters = []): array
     {
         return [
@@ -57,6 +100,12 @@ class FinanceRepository implements FinanceRepositoryInterface
         ];
     }
 
+    /**
+     * Возвращает финансовые показатели по офисам
+     *
+     * @param array $filters Фильтры (office_id, date_from, date_to)
+     * @return \Illuminate\Support\Collection
+     */
     public function byOffice(array $filters = [])
     {
         $from = $filters['from'] ?? $filters['date_from'] ?? '1900-01-01';
@@ -100,6 +149,12 @@ class FinanceRepository implements FinanceRepositoryInterface
         });
     }
 
+    /**
+     * Возвращает финансовые показатели по статьям
+     *
+     * @param array $filters Фильтры (office_id, date_from, date_to)
+     * @return \Illuminate\Support\Collection
+     */
     public function byArticle(array $filters = [])
     {
         $from = $filters['from'] ?? $filters['date_from'] ?? '1900-01-01';

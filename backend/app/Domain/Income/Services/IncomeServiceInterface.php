@@ -1,7 +1,11 @@
 <?php
 
-namespace App\Interfaces\Services;
+namespace App\Domain\Income\Services;
 
+/**
+ * Интерфейс сервиса работы с доходами.
+ * Определяет методы для CRUD операций.
+ */
 interface IncomeServiceInterface
 {
     public function all();

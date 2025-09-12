@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Repositories;
+namespace App\Domain\Role\Repositories;
 
-use App\Interfaces\Repositories\RoleRepositoryInterface;
+use App\Domain\Role\Repositories\RoleRepositoryInterface;
 use App\Models\Role;
 
 /**
