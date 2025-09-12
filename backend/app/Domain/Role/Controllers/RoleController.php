@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
  * Контроллер для работы с ролями.
  * Выполняет CRUD операции через сервисный слой.
  */
-class RoleController extends Controller
+class RoleController extends BaseController
 {
     /**
      * @var RoleServiceInterface

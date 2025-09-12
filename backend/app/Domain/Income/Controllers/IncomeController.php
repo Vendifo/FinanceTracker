@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Interfaces\Services\IncomeServiceInterface;
 use Illuminate\Http\Request;
 
-class IncomeController extends Controller
+class IncomeController extends BaseController
 {
     protected IncomeServiceInterface $incomeService;
 

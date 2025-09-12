@@ -21,7 +21,7 @@ use Illuminate\Http\Request;
  * Контроллер для управления пользователями.
  * Использует UserService для бизнес-логики.
  */
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * @var UserServiceinterface Сервис для работы с пользователями
@@ -36,24 +36,6 @@ class UserController extends Controller
     public function __construct(UserServiceinterface $userService)
     {
         $this->userService = $userService;
-    }
-
-    /**
-     * Универсальный метод формирования JSON-ответа для API.
-     *
-     * @param mixed $data Данные для ответа
-     * @param string $message Сообщение
-     * @param bool $success Статус успеха
-     * @param int $status HTTP-код ответа
-     * @return JsonResponse
-     */
-    private function apiResponse($data = null, string $message = '', bool $success = true, int $status = 200): JsonResponse
-    {
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-            'data' => $data
-        ], $status);
     }
 
     /**

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Interfaces\Services\ExpenseServiceInterface;
 use Illuminate\Http\Request;
 
-class ExpenseController extends Controller
+class ExpenseController extends BaseController
 {
     protected ExpenseServiceInterface $expenseService;
 

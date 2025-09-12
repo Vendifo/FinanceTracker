@@ -7,7 +7,7 @@ use App\Services\FinanceService;
 use App\Models\Income;
 use App\Models\Expense;
 
-class FinanceController extends Controller
+class FinanceController extends BaseController
 {
     protected FinanceService $financeService;
 

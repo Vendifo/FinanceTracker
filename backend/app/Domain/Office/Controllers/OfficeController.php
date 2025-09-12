@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Interfaces\Services\OfficeServiceInterface;
 use Illuminate\Http\Request;
 
-class OfficeController extends Controller
+class OfficeController extends BaseController
 {
     protected OfficeServiceInterface $officeService;
 
