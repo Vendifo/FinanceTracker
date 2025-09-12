@@ -3,101 +3,100 @@
 namespace App\Http\Controllers;
 
 use App\Interfaces\Services\ExpenseServiceInterface;
-use Illuminate\Http\Request;
+use App\Http\Requests\ExpenseRequest;
+use App\Http\Resources\ExpenseResource;
+use Illuminate\Http\JsonResponse;
 
+/**
+ * Контроллер для управления расходами
+ *
+ * @package App\Http\Controllers
+ */
 class ExpenseController extends BaseController
 {
+    /**
+     * @var ExpenseServiceInterface Сервис для работы с расходами
+     */
     protected ExpenseServiceInterface $expenseService;
 
+    /**
+     * ExpenseController constructor.
+     *
+     * @param ExpenseServiceInterface $expenseService
+     */
     public function __construct(ExpenseServiceInterface $expenseService)
     {
         $this->expenseService = $expenseService;
     }
 
     /**
-     * Список всех расходов
+     * Получить список всех расходов.
+     *
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        return response()->json($this->expenseService->all());
+        $expenses = $this->expenseService->all();
+        return ExpenseResource::collection($expenses);
     }
 
     /**
-     * Просмотр конкретного расхода
+     * Получить конкретный расход по ID.
+     *
+     * @param int $id
+     * @return ExpenseResource|JsonResponse
      */
-    public function show($id)
+    public function show(int $id)
     {
         $expense = $this->expenseService->find($id);
-        if (!$expense) {
-            return response()->json(['message' => 'Expense not found'], 404);
-        }
-        return response()->json($expense, 200);
-    }
-
-    /**
-     * Создание нового расхода
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'description' => 'required|string|max:200',
-            'amount'      => 'required|numeric',
-            'user_id'     => 'required|exists:users,id',
-            'article_id'  => 'required|exists:articles,id',
-            'office_id'   => 'required|exists:offices,id',
-            'created_at' => 'sometimes|date',
-
-        ]);
-
-        $expense = $this->expenseService->create($request->only([
-            'description',
-            'amount',
-            'user_id',
-            'article_id',
-            'office_id',
-            'created_at',
-        ]));
-
-        return response()->json($expense, 201);
-    }
-
-    /**
-     * Обновление существующего расхода
-     */
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'description' => 'sometimes|string|max:200',
-            'amount'      => 'sometimes|numeric',
-            'user_id'     => 'sometimes|exists:users,id',
-            'article_id'  => 'sometimes|exists:articles,id',
-            'office_id'   => 'sometimes|exists:offices,id',
-            'created_at' => 'sometimes|date',
-
-        ]);
-
-        $expense = $this->expenseService->update($id, $request->only([
-            'description',
-            'amount',
-            'user_id',
-            'article_id',
-            'office_id',
-            'created_at',
-        ]));
 
         if (!$expense) {
             return response()->json(['message' => 'Expense not found'], 404);
         }
 
-        return response()->json($expense, 200);
+        return new ExpenseResource($expense);
     }
 
     /**
-     * Удаление расхода
+     * Создать новый расход.
+     *
+     * @param ExpenseRequest $request
+     * @return ExpenseResource
      */
-    public function destroy($id)
+    public function store(ExpenseRequest $request)
+    {
+        $expense = $this->expenseService->create($request->validated());
+        return new ExpenseResource($expense);
+    }
+
+    /**
+     * Обновить существующий расход.
+     *
+     * @param ExpenseRequest $request
+     * @param int $id
+     * @return ExpenseResource|JsonResponse
+     */
+    public function update(ExpenseRequest $request, int $id)
+    {
+        $expense = $this->expenseService->update($id, $request->validated());
+
+        if (!$expense) {
+            return response()->json(['message' => 'Expense not found'], 404);
+        }
+
+        return new ExpenseResource($expense);
+    }
+
+    /**
+     * Удалить расход по ID.
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function destroy(int $id): JsonResponse
     {
         $deleted = $this->expenseService->delete($id);
+
         if (!$deleted) {
             return response()->json(['message' => 'Expense not found'], 404);
         }
