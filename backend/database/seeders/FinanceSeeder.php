@@ -13,26 +13,40 @@ class FinanceSeeder extends Seeder
 {
     public function run(): void
     {
-        // Создаём пользователей, офисы и статьи
-        $users = User::factory()->count(50)->create();
-        $offices = Office::factory()->count(10)->create();
-        $articles = Article::factory()->count(50)->create();
+        $users = User::all();
+        $offices = Office::all();
+        $articles = Article::all();
 
-        $totalRecords = 10000;
+        $totalRecords = 1000;
 
-        // Генерация расходов
-        Expense::factory()->count($totalRecords)->make()->each(function ($expense) use ($users, $offices, $articles) {
-            $expense->user_id    = $users->random()->id;
-            $expense->office_id  = $offices->random()->id;
-            $expense->article_id = $articles->random()->id;
-            $expense->save();
-        });
+        for ($i = 0; $i < $totalRecords; $i++) {
+            $user = $users->random();
+            $office = $offices->random();
+            $article = $articles->random();
 
-        // Генерация доходов
-        Income::factory()->count($totalRecords)->make()->each(function ($income) use ($offices, $articles) {
-            $income->office_id  = $offices->random()->id;
-            $income->article_id = $articles->random()->id;
-            $income->save();
-        });
+            $incomeAmount = rand(0, 50000) / 100;
+            $expenseAmount = rand(0, 20000) / 100;
+
+            // Доход
+            Income::create([
+                'office_id'  => $office->id,
+                'article_id' => $article->id,
+                'amount'     => $incomeAmount,
+                'description'=> "Доход по статье {$article->name} для {$user->name}",
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Расход
+            Expense::create([
+                'user_id'    => $user->id,
+                'office_id'  => $office->id,
+                'article_id' => $article->id,
+                'amount'     => $expenseAmount,
+                'description'=> "Расход по статье {$article->name} для {$user->name}",
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }
