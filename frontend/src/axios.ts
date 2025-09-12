@@ -1,17 +1,14 @@
 import axios from 'axios';
 
-// Берем URL из переменной окружения, иначе используем IP VPS
-const API_URL = import.meta.env.VITE_API_URL || 'http://92.255.76.182:9000';
-
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:9000/api',
   withCredentials: true, // обязательно для Sanctum
 });
 
 // Получение CSRF куки
 export const getCsrf = async () => {
   try {
-    await axios.get(`${API_URL}/sanctum/csrf-cookie`, {
+    await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:9000'}/sanctum/csrf-cookie`, {
       withCredentials: true,
     });
   } catch (err) {

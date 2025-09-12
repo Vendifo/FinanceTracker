@@ -16,6 +16,11 @@ use App\Domain\Expense\Services\ExpenseService;
 use App\Domain\Expense\Services\ExpenseServiceInterface;
 
 
+use App\Domain\Finance\Repositories\FinanceRepository;
+use App\Domain\Finance\Repositories\FinanceRepositoryInterface;
+use App\Domain\Finance\Services\FinanceService;
+use App\Domain\Finance\Services\FinanceServiceInterface;
+
 
 use App\Interfaces\Services\UserServiceinterface;
 use App\Interfaces\Services\RoleServiceInterface;
@@ -63,6 +68,9 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(ExpenseRepositoryInterface::class, ExpenseRepository::class);
         $this->app->bind(ExpenseServiceInterface::class, ExpenseService::class);
+
+        $this->app->bind(FinanceRepositoryInterface::class, FinanceRepository::class);
+        $this->app->bind(FinanceServiceInterface::class, FinanceService::class);
     }
 
     /**

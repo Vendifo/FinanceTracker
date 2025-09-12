@@ -3,12 +3,12 @@
 use App\Domain\Article\Controllers\ArticleController;
 use App\Domain\Auth\Controllers\AuthController;
 use App\Domain\Expense\Controllers\ExpenseController;
+use App\Domain\Finance\Controllers\FinanceController;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\IncomeController;
-use App\Http\Controllers\FinanceController;
 use App\Http\Controllers\UserOfficeController;
 
 use Illuminate\Support\Facades\Route;
@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('finance', [FinanceController::class, 'index']);
 
+    Route::get('finance/summary', [FinanceController::class, 'summary']);
     Route::get('finance/dynamics', [FinanceController::class, 'dynamics']);
     Route::get('finance/balance-period', [FinanceController::class, 'balancePeriod']);
     Route::get('finance/by-office', [FinanceController::class, 'byOffice']);
