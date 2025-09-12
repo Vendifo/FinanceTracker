@@ -21,7 +21,7 @@ use Illuminate\Http\Response;
  * - me() - получение текущего пользователя
  * - logout() - удаление токена
  */
-class AuthController extends ApiController
+class AuthController extends BaseController
 {
     /**
      * Регистрация нового пользователя

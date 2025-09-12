@@ -8,7 +8,7 @@ use App\Http\Requests\UpdateArticleRequest;
 use App\Http\Resources\ArticleResource;
 use Illuminate\Http\JsonResponse;
 
-class ArticleController extends ApiController
+class ArticleController extends BaseController
 {
     protected ArticleServiceInterface $articleService;
 
