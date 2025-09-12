@@ -51,27 +51,22 @@ class UserOfficeController extends BaseController
         );
     }
 
-    /**
-     * Переключить активный офис текущего пользователя
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
+    // переключить активный офис
     public function switchOffice(Request $request)
     {
         $request->validate([
             'office_id' => 'required|exists:offices,id',
         ]);
-
+        /** @var \App\Models\User $user */
         $user = Auth::user();
-        /** @var User $user */
         $officeId = $request->input('office_id');
 
         if (! $user->offices->pluck('id')->contains($officeId)) {
             return $this->apiResponse(null, 'Нет доступа к этому офису', false, 403);
         }
 
-        session(['current_office_id' => $officeId]);
+        // сохраняем в БД
+        $user->update(['current_office_id' => $officeId]);
 
         return $this->apiResponse(
             ['current_office_id' => $officeId],
@@ -79,20 +74,14 @@ class UserOfficeController extends BaseController
         );
     }
 
-    /**
-     * Получить активный офис текущего пользователя
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+    // получить текущий активный офис
     public function currentOffice()
     {
         $user = Auth::user();
-        /** @var User $user */
-        $currentOfficeId = session('current_office_id');
-        $office = $user->offices()->find($currentOfficeId);
+        $office = $user->currentOffice;
 
         return $this->apiResponse([
-            'current_office_id' => $currentOfficeId,
+            'current_office_id' => $user->current_office_id,
             'current_office' => $office,
         ], 'Активный офис пользователя');
     }

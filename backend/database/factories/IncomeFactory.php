@@ -3,9 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Income;
-use App\Models\User;
-use App\Models\Office;
-use App\Models\Article;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class IncomeFactory extends Factory
@@ -16,11 +13,11 @@ class IncomeFactory extends Factory
     {
         return [
             'description' => $this->faker->sentence(5),
-            'amount' => $this->faker->randomFloat(2, 1000, 50000),
-            'article_id' => Article::factory(),   // всегда создаём артикул
-            'office_id' => Office::factory(),     // всегда создаём офис
-            'created_at' => $this->faker->dateTimeBetween('2025-01-01', '2025-12-31'),
-            'updated_at' => now(),
+            'amount'      => $this->faker->randomFloat(2, 1000, 50000),
+            'article_id'  => null, // будем подставлять из сидера
+            'office_id'   => null, // будем подставлять из сидера
+            'created_at'  => $this->faker->dateTimeBetween('2025-01-01', '2025-12-31'),
+            'updated_at'  => now(),
         ];
     }
 }

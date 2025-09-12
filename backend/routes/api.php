@@ -51,9 +51,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('users/{user}/offices', [UserOfficeController::class, 'update']);
 
     // Переключение активного офиса текущего пользователя
-    Route::post('users/switch-office', [UserOfficeController::class, 'switchOffice']);
+    Route::post('switch-office', [UserOfficeController::class, 'switchOffice']);
 
     // Текущий активный офис
-    Route::get('users/current-office', [UserOfficeController::class, 'currentOffice']);
+    Route::get('current-office', [UserOfficeController::class, 'currentOffice']);
 
 });
