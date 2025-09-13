@@ -17,11 +17,13 @@ export default defineConfig({
         target: 'http://92.255.76.182:9000',
         changeOrigin: true,
         secure: false,
+        cookieDomainRewrite: 'localhost', // важно для CSRF и сессий
       },
-      '/sanctum/csrf-cookie': {
+      '/sanctum': {
         target: 'http://92.255.76.182:9000',
         changeOrigin: true,
         secure: false,
+        cookieDomainRewrite: 'localhost',
       },
     },
   },

@@ -11,13 +11,16 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
-    proxy: {
-      '/api': {
-        target: 'http://host.docker.internal:9000',
-        changeOrigin: true,
-        secure: false,
-      },
+  host: true,
+  proxy: {
+    '/api': {
+      target: 'http://92.255.76.182:9000',
+      changeOrigin: true,
+      secure: false,
+      // Добавляем эти опции, чтобы куки проходили через прокси
+      cookieDomainRewrite: 'localhost',
     },
   },
+},
+
 })
