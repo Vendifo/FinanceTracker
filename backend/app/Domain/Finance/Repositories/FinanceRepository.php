@@ -21,14 +21,21 @@ class FinanceRepository implements FinanceRepositoryInterface
         if (!empty($filters['office_id'])) $query->where('office_id', $filters['office_id']);
         if (!empty($filters['article_id'])) $query->where('article_id', $filters['article_id']);
         if (!empty($filters['user_id'])) $query->where('user_id', $filters['user_id']);
-        if (!empty($filters['from'])) $query->whereDate('created_at', '>=', $filters['from']);
-        if (!empty($filters['to'])) $query->whereDate('created_at', '<=', $filters['to']);
-        if (!empty($filters['date'])) $query->whereDate('created_at', $filters['date']);
+
+        if (!empty($filters['from']) || !empty($filters['to'])) {
+            if (!empty($filters['from'])) $query->whereDate('created_at', '>=', $filters['from']);
+            if (!empty($filters['to'])) $query->whereDate('created_at', '<=', $filters['to']);
+        } elseif (!empty($filters['date'])) {
+            $query->whereDate('created_at', $filters['date']);
+        }
+
         if (!empty($filters['year'])) $query->whereYear('created_at', $filters['year']);
         if (!empty($filters['month'])) $query->whereMonth('created_at', $filters['month']);
         if (!empty($filters['day'])) $query->whereDay('created_at', $filters['day']);
+
         return $query;
     }
+
 
     /**
      * Возвращает общую сумму доходов по фильтрам

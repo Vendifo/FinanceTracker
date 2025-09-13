@@ -44,11 +44,9 @@ class FinanceController extends BaseController
     public function index(FinanceRequest $request)
     {
         $filters = $request->validated();
-        $date = $filters['date'] ?? now()->toDateString();
-
-        // Баланс с начала учета до выбранной даты
         $filters['from'] = '1900-01-01';
-        $filters['to'] = $date;
+        $filters['to'] = $filters['date'] ?? now()->toDateString();
+        unset($filters['date']);
 
         return response()->json([
             'incomes' => $this->service->incomes($filters),
@@ -56,6 +54,7 @@ class FinanceController extends BaseController
             'balance' => $this->service->balance($filters),
         ]);
     }
+
 
 
     /**
