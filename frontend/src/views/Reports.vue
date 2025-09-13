@@ -230,8 +230,10 @@ async function loadByOffice() {
   byOfficeData.value = []
 
   try {
-    const params: any = {}
-    if (selectedArticle.value) params.article_id = selectedArticle.value
+    const params: any = {
+      date_from: dateFrom.value,
+      date_to: dateTo.value
+    }
 
     const res = await api.get('/finance/by-office', { params, headers: authHeaders() })
     byOfficeData.value = res.data.offices
@@ -242,6 +244,7 @@ async function loadByOffice() {
     loadingByOffice.value = false
   }
 }
+
 
 function formatMoney(value: number): string {
   const num = Math.round(Number(value));
