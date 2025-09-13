@@ -3,8 +3,8 @@
     <h3 class="text-2xl font-semibold mb-4">Приходы</h3>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50 text-gray-600 text-sm font-medium">
+      <table class="min-w-full border border-gray-200">
+        <thead class="bg-gray-50 text-gray-600 text-sm font-medium border-b border-gray-300">
           <tr>
             <th class="px-4 py-2 text-left">Описание</th>
             <th class="px-4 py-2 text-left">Сумма</th>
@@ -13,27 +13,18 @@
           </tr>
 
           <!-- Форма добавления -->
-          <tr class="bg-gray-50">
+          <tr class="bg-gray-100 border-b border-gray-300">
             <td class="px-4 py-2">
-              <input
-                v-model="form.description"
-                placeholder="Описание"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
+              <input v-model="form.description" placeholder="Описание"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
             </td>
             <td class="px-4 py-2">
-              <input
-                v-model.number="form.amount"
-                type="number"
-                placeholder="Сумма"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
+              <input v-model.number="form.amount" type="number" placeholder="Сумма"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500" />
             </td>
             <td class="px-4 py-2">
-              <select
-                v-model="form.article_id"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
+              <select v-model="form.article_id"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option disabled value="">Выберите статью</option>
                 <option v-for="article in articles" :key="article.id" :value="article.id">
                   {{ article.name }}
@@ -41,11 +32,8 @@
               </select>
             </td>
             <td class="px-4 py-2">
-              <button
-                @click="saveIncome"
-                :disabled="loading"
-                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button @click="saveIncome" :disabled="loading"
+                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
                 <span v-if="loading">Сохраняем...</span>
                 <span v-else>Добавить</span>
               </button>
@@ -54,20 +42,14 @@
         </thead>
 
         <tbody>
-          <tr
-            v-for="income in incomes"
-            :key="income.id"
-            class="hover:bg-gray-50 transition"
-          >
+          <tr v-for="income in incomes" :key="income.id"
+            class="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition border-b border-gray-200">
             <td class="px-4 py-3 font-medium text-gray-900">{{ income.description }}</td>
             <td class="px-4 py-3 text-gray-700">{{ income.amount }} ₽</td>
             <td class="px-4 py-3 text-gray-600">{{ getArticleName(income.article_id) }}</td>
             <td class="px-4 py-3">
-              <button
-                @click="deleteIncome(income.id)"
-                :disabled="deletingIds.includes(income.id)"
-                class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <button @click="deleteIncome(income.id)" :disabled="deletingIds.includes(income.id)"
+                class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed">
                 <span v-if="deletingIds.includes(income.id)">Удаляем...</span>
                 <span v-else>Удалить</span>
               </button>
@@ -78,6 +60,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref } from 'vue'
