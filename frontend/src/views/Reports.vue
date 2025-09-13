@@ -278,28 +278,50 @@ async function loadDynamics() {
     const res = await api.get('/finance/dynamics', { params, headers: authHeaders() })
     const data = res.data
 
+    // Функция безопасного преобразования строки в число
+    const toNumber = (val: any) => parseFloat(String(val)) || 0
+
+    // Собираем уникальные даты
     const labels = Array.from(new Set([
-      ...data.incomes.map((i: any) => i.date),
-      ...data.expenses.map((e: any) => e.date),
+      ...data.incomes.map((i: any) => i.created_at.slice(0, 10)),
+      ...data.expenses.map((e: any) => e.created_at.slice(0, 10)),
     ])).sort()
+
+    // Данные для графика
+    const incomeDataset = labels.map(date =>
+      data.incomes
+        .filter((i: any) => i.created_at.slice(0, 10) === date)
+        .reduce((sum: number, i: any) => sum + toNumber(i.amount), 0)
+    )
+
+    const expenseDataset = labels.map(date =>
+      data.expenses
+        .filter((e: any) => e.created_at.slice(0, 10) === date)
+        .reduce((sum: number, e: any) => sum + toNumber(e.amount), 0)
+    )
+
+    console.log('Labels:', labels)
+    console.log('Income dataset:', incomeDataset)
+    console.log('Expense dataset:', expenseDataset)
 
     chartData.value = {
       labels,
       datasets: [
         {
           label: 'Доходы',
-          data: labels.map(date => data.incomes.find((i: any) => i.date === date)?.total ?? 0),
+          data: incomeDataset,
           borderColor: 'rgb(34,197,94)',
           backgroundColor: 'rgba(34,197,94,0.2)',
         },
         {
           label: 'Расходы',
-          data: labels.map(date => data.expenses.find((e: any) => e.date === date)?.total ?? 0),
+          data: expenseDataset,
           borderColor: 'rgb(239,68,68)',
           backgroundColor: 'rgba(239,68,68,0.2)',
         }
       ]
     }
+
   } catch (err: any) {
     console.error(err)
     error.value = err.response?.data?.message || 'Ошибка загрузки данных'
@@ -307,6 +329,7 @@ async function loadDynamics() {
     loading.value = false
   }
 }
+
 
 // Загрузка баланса за период
 async function loadBalance() {
