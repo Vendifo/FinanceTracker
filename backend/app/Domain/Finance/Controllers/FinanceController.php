@@ -45,7 +45,9 @@ class FinanceController extends BaseController
     {
         $filters = $request->validated();
         $date = $filters['date'] ?? now()->toDateString();
-        $filters['from'] = $date;
+
+        // Баланс с начала учета до выбранной даты
+        $filters['from'] = '1900-01-01';
         $filters['to'] = $date;
 
         return response()->json([
@@ -54,6 +56,7 @@ class FinanceController extends BaseController
             'balance' => $this->service->balance($filters),
         ]);
     }
+
 
     /**
      * Возвращает динамику доходов и расходов за период
