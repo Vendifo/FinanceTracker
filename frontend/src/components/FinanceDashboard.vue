@@ -54,13 +54,15 @@
 
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import api from '@/axios';
 import IncomeTable from '@/components/IncomeTable.vue';
 import ExpenseTable from '@/components/ExpenseTable.vue';
 import { useUserStore } from '@/stores/userStore';
+import { useAlert } from '@/composables/useAlert';
 
 const userStore = useUserStore();
+const { showAlert } = useAlert();
 
 const offices = ref<any[]>([]);
 const selectedOfficeId = ref<number | null>(null);
@@ -76,13 +78,62 @@ const authHeaders = () => ({
   Authorization: `Bearer ${userStore.token}`,
 });
 
-import { useAlert } from '@/composables/useAlert'
-
-const { showAlert } = useAlert()
-const fetchData = async () => {
+// Загружаем офисы пользователя
+const fetchUserOffices = async () => {
   try {
-    const [officeRes, articlesRes, usersRes, financeRes] = await Promise.all([
-      api.get('/offices', { headers: authHeaders() }),
+    const res = await api.get(`/users/${userStore.user.id}/offices`, {
+      headers: authHeaders(),
+    });
+    offices.value = res.data.data || res.data;
+
+    // получаем активный офис
+    const currentOffice = await api.get('/current-office', {
+      headers: authHeaders(),
+    });
+    selectedOfficeId.value = currentOffice.data?.id ?? null;
+  } catch (err: any) {
+    console.error(err);
+    offices.value = [];
+    showAlert({
+      type: 'error',
+      title: 'Ошибка',
+      message: 'Не удалось загрузить список офисов',
+    });
+  }
+};
+
+// Переключение активного офиса
+const switchOffice = async (officeId: number | null) => {
+  try {
+    await api.post(
+      '/switch-office',
+      { office_id: officeId },
+      { headers: authHeaders() }
+    );
+    await fetchData();
+  } catch (err: any) {
+    console.error(err);
+    showAlert({
+      type: 'error',
+      title: 'Ошибка',
+      message: 'Не удалось переключить офис',
+    });
+  }
+};
+
+// Получение данных
+const fetchData = async () => {
+  if (!selectedOfficeId.value) {
+    incomes.value = [];
+    expenses.value = [];
+    articles.value = [];
+    users.value = [];
+    balance.value = 0;
+    return;
+  }
+
+  try {
+    const [articlesRes, usersRes, financeRes] = await Promise.all([
       api.get('/articles', { headers: authHeaders() }),
       api.get('/users', { headers: authHeaders() }),
       api.get('/finance', {
@@ -91,10 +142,8 @@ const fetchData = async () => {
       }),
     ]);
 
-    offices.value = officeRes.data.data || officeRes.data;
     articles.value = articlesRes.data.data || articlesRes.data;
     users.value = usersRes.data.data || usersRes.data;
-
     incomes.value = financeRes.data.incomes ?? [];
     expenses.value = financeRes.data.expenses ?? [];
     balance.value = financeRes.data.balance ?? 0;
@@ -105,16 +154,31 @@ const fetchData = async () => {
     articles.value = [];
     users.value = [];
     balance.value = 0;
-
     showAlert({
       type: 'error',
       title: 'Ошибка',
-      message: err.response?.data?.message || 'Не удалось загрузить данные финансового дашборда'
+      message:
+        err.response?.data?.message ||
+        'Не удалось загрузить данные финансового дашборда',
     });
   }
 };
 
+// Следим за изменением выбранного офиса
+watch(selectedOfficeId, (officeId) => {
+  if (officeId) {
+    switchOffice(officeId);
+  } else {
+    // если выбран "Все офисы", то ничего не показываем
+    incomes.value = [];
+    expenses.value = [];
+    balance.value = 0;
+  }
+});
 
-// Загрузка данных сразу один раз и при изменении фильтров
-watch([selectedOfficeId, filterDate], fetchData, { immediate: true });
+// Следим за датой
+watch(filterDate, fetchData);
+
+// Загружаем офисы и текущий офис при монтировании
+onMounted(fetchUserOffices);
 </script>

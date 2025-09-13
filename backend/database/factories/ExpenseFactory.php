@@ -14,18 +14,15 @@ class ExpenseFactory extends Factory
 
     public function definition(): array
     {
-        $userIds = User::pluck('id')->toArray();
-        $articleIds = Article::pluck('id')->toArray();
-        $officeIds = Office::pluck('id')->toArray();
-
         return [
             'description' => $this->faker->sentence(5),
-            'amount' => $this->faker->randomFloat(2, 500, 20000),
-            'user_id' => $this->faker->randomElement($userIds),
-            'article_id' => $this->faker->randomElement($articleIds),
-            'office_id' => $this->faker->randomElement($officeIds),
-            'created_at' => $this->faker->dateTimeBetween('2025-01-01', '2025-12-31'),
-            'updated_at' => now(),
+            'amount'      => $this->faker->randomFloat(2, 500, 20000),
+            'user_id'    => null,
+'article_id' => null,
+'office_id'  => null,
+
+            'created_at'  => $this->faker->dateTimeBetween('2025-01-01', '2025-12-31'),
+            'updated_at'  => now(),
         ];
     }
 }

@@ -4,34 +4,45 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
-use App\Interfaces\Services\UserServiceinterface;
-use App\Interfaces\Services\RoleServiceInterface;
-use App\Interfaces\Services\ArticleServiceInterface;
-use App\Interfaces\Services\OfficeServiceInterface;
-use App\Interfaces\Services\IncomeServiceInterface;
-use App\Interfaces\Services\ExpenseServiceInterface;
+use App\Domain\Article\Repositories\ArticleRepository;
+use App\Domain\Article\Repositories\ArticleRepositoryInterface;
+use App\Domain\Article\Services\ArticleService;
+use App\Domain\Article\Services\ArticleServiceInterface;
 
-use App\Services\UserService;
-use App\Services\RoleService;
-use App\Services\ArticleService;
-use App\Services\OfficeService;
-use App\Services\IncomeService;
-use App\Services\ExpenseService;
 
-use App\Interfaces\Repositories\UserRepositoryInterface;
-use App\Interfaces\Repositories\RoleRepositoryInterface;
-use App\Interfaces\Repositories\ArticleRepositoryInterface;
-use App\Interfaces\Repositories\OfficeRepositoryInterface;
-use App\Interfaces\Repositories\IncomeRepositoryInterface;
-use App\Interfaces\Repositories\ExpenseRepositoryInterface;
+use App\Domain\Expense\Repositories\ExpenseRepository;
+use App\Domain\Expense\Repositories\ExpenseRepositoryInterface;
+use App\Domain\Expense\Services\ExpenseService;
+use App\Domain\Expense\Services\ExpenseServiceInterface;
 
-use App\Repositories\UserRepository;
-use App\Repositories\RoleRepository;
-use App\Repositories\ArticleRepository;
-use App\Repositories\OfficeRepository;
-use App\Repositories\IncomeRepository;
-use App\Repositories\ExpenseRepository;
 
+use App\Domain\Finance\Repositories\FinanceRepository;
+use App\Domain\Finance\Repositories\FinanceRepositoryInterface;
+use App\Domain\Finance\Services\FinanceService;
+use App\Domain\Finance\Services\FinanceServiceInterface;
+
+
+use App\Domain\Income\Repositories\IncomeRepository;
+use App\Domain\Income\Repositories\IncomeRepositoryInterface;
+use App\Domain\Income\Services\IncomeService;
+use App\Domain\Income\Services\IncomeServiceInterface;
+
+
+use App\Domain\Office\Repositories\OfficeRepository;
+use App\Domain\Office\Repositories\OfficeRepositoryInterface;
+use App\Domain\Office\Services\OfficeService;
+use App\Domain\Office\Services\OfficeServiceInterface;
+
+use App\Domain\Role\Repositories\RoleRepository;
+use App\Domain\Role\Repositories\RoleRepositoryInterface;
+use App\Domain\Role\Services\RoleService;
+use App\Domain\Role\Services\RoleServiceInterface;
+
+
+use App\Domain\User\Repositories\UserRepository;
+use App\Domain\User\Repositories\UserRepositoryInterface;
+use App\Domain\User\Services\UserService;
+use App\Domain\User\Services\UserServiceinterface;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -58,6 +69,9 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->bind(ExpenseRepositoryInterface::class, ExpenseRepository::class);
         $this->app->bind(ExpenseServiceInterface::class, ExpenseService::class);
+
+        $this->app->bind(FinanceRepositoryInterface::class, FinanceRepository::class);
+        $this->app->bind(FinanceServiceInterface::class, FinanceService::class);
     }
 
     /**

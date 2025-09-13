@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Income;
+use App\Models\Office;
+use App\Models\Article;
 
 class IncomeSeeder extends Seeder
 {
@@ -11,6 +13,15 @@ class IncomeSeeder extends Seeder
     {
         $totalRecords = 10000;
 
-        Income::factory()->count($totalRecords)->create();
+        // Создаём фиксированное количество офисов и статей
+        $offices = Office::factory()->count(10)->create();
+        $articles = Article::factory()->count(50)->create();
+
+        // Создаём доходы
+        Income::factory()->count($totalRecords)->make()->each(function ($income) use ($offices, $articles) {
+            $income->office_id = $offices->random()->id;
+            $income->article_id = $articles->random()->id;
+            $income->save();
+        });
     }
 }

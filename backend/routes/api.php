@@ -1,14 +1,15 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\OfficeController;
-use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\IncomeController;
-use App\Http\Controllers\ExpenseController;
-use App\Http\Controllers\FinanceController;
-use App\Http\Controllers\UserOfficeController;
+use App\Domain\Article\Controllers\ArticleController;
+use App\Domain\Auth\Controllers\AuthController;
+use App\Domain\Expense\Controllers\ExpenseController;
+use App\Domain\Finance\Controllers\FinanceController;
+use App\Domain\Income\Controllers\IncomeController;
+use App\Domain\Office\Controllers\OfficeController;
+use App\Domain\Role\Controllers\RoleController;
+use App\Domain\User\Controllers\UserController;
+use App\Domain\UserOffice\Controllers\UserOfficeController;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -25,8 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Смена пароля конкретного пользователя (для админа)
     Route::post('users/{user}/change-password', [UserController::class, 'changePassword']);
 
-
-
     Route::post('users/{user}/assign-role', [UserController::class, 'assignRole']);
 
     Route::apiResource('users', UserController::class);
@@ -38,12 +37,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('finance', [FinanceController::class, 'index']);
 
+    Route::get('finance/summary', [FinanceController::class, 'summary']);
     Route::get('finance/dynamics', [FinanceController::class, 'dynamics']);
     Route::get('finance/balance-period', [FinanceController::class, 'balancePeriod']);
     Route::get('finance/by-office', [FinanceController::class, 'byOffice']);
 
     Route::get('finance/by-article', [FinanceController::class, 'byArticle']);
 
+    // Список офисов конкретного пользователя
+    Route::get('users/{user}/offices', [UserOfficeController::class, 'index']);
+
+    // Обновление офисов пользователя
+    Route::put('users/{user}/offices', [UserOfficeController::class, 'update']);
+
+    // Переключение активного офиса текущего пользователя
+    Route::post('switch-office', [UserOfficeController::class, 'switchOffice']);
+
+    // Текущий активный офис
+    Route::get('current-office', [UserOfficeController::class, 'currentOffice']);
 
 });
-

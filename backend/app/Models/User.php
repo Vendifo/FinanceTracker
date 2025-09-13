@@ -14,11 +14,13 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'email',
+        'password',
         'first_name',
         'last_name',
         'middle_name',
-        'email',
-        'password',
+        'role_id',
+        'current_office_id',
     ];
 
     protected $hidden = [
@@ -44,5 +46,10 @@ class User extends Authenticatable
     public function offices()
     {
         return $this->belongsToMany(Office::class);
+    }
+
+    public function currentOffice()
+    {
+        return $this->belongsTo(Office::class, 'current_office_id');
     }
 }

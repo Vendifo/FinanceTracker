@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string('middle_name', 150)->nullable()->default('');
             $table->unsignedBigInteger('role_id')->nullable();
             $table->foreign('role_id')->references('id')->on('roles')->nullOnDelete();
+            $table->foreignId('current_office_id')->nullable()->constrained('offices')->nullOnDelete();
+
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
