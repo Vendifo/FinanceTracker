@@ -1,12 +1,9 @@
 <template>
   <div class="bg-white text-gray-800 rounded-lg shadow p-6">
-     <div class="flex justify-between items-center mb-4">
+    <div class="flex justify-between items-center mb-4">
       <h3 class="text-xl font-semibold">Статьи</h3>
-      <button
-        @click="openAddArticle"
-        class="p-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-        title="Добавить статью"
-      >
+      <button @click="openAddArticle" class="p-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        title="Добавить статью">
         <Plus class="w-5 h-5" />
       </button>
     </div>
@@ -25,33 +22,40 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="article in articles"
-            :key="article.id"
-            class="hover:bg-gray-50 transition"
-          >
+          <tr v-for="article in articles" :key="article.id"
+            class="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition border-b border-gray-200">
             <td class="px-3 py-2 text-gray-700">{{ article.name }}</td>
             <td class="px-3 py-2 flex justify-end gap-2">
-              <button
-                @click="openEditArticle(article)"
-                class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition"
-                title="Редактировать"
-              >
+              <button @click="openEditArticle(article)"
+                class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded transition" title="Редактировать">
                 <Edit class="w-4 h-4" />
               </button>
-              <button
-                @click="openDeleteArticle(article)"
-                class="p-2 bg-red-600 hover:bg-red-700 text-white rounded transition"
-                title="Удалить"
-              >
+              <button @click="openDeleteArticle(article)"
+                class="p-2 bg-red-600 hover:bg-red-700 text-white rounded transition" title="Удалить">
                 <Trash2 class="w-4 h-4" />
               </button>
             </td>
           </tr>
+
           <tr v-if="articles.length === 0">
-            <td colspan="2" class="text-center py-4 text-gray-500 text-sm">Статей нет</td>
+            <td colspan="2" class="text-center py-4 text-gray-500 text-sm border-b border-gray-200">
+              Статей нет
+            </td>
+          </tr>
+
+          <tr v-if="loading">
+            <td colspan="2" class="text-center py-4 text-gray-500 text-sm border-b border-gray-200">
+              Загрузка...
+            </td>
+          </tr>
+
+          <tr v-if="error">
+            <td colspan="2" class="text-center py-4 text-red-500 text-sm border-b border-gray-200">
+              {{ error }}
+            </td>
           </tr>
         </tbody>
+
       </table>
     </div>
 
@@ -60,19 +64,12 @@
       <div class="absolute inset-0 bg-white/30 backdrop-blur-sm" @click="closeAddArticle"></div>
       <div class="relative bg-white p-6 rounded-2xl shadow-xl w-96 z-10" @click.stop>
         <h3 class="text-lg font-bold mb-4">Новая статья</h3>
-        <input
-          v-model="articleForm.name"
-          type="text"
-          placeholder="Название статьи"
-          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
+        <input v-model="articleForm.name" type="text" placeholder="Название статьи"
+          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-green-500" />
         <div class="flex justify-end gap-2">
           <button @click="closeAddArticle" class="px-3 py-1 border rounded">Отмена</button>
-          <button
-            @click="createArticleHandler"
-            :disabled="actionLoading"
-            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50"
-          >
+          <button @click="createArticleHandler" :disabled="actionLoading"
+            class="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 transition disabled:opacity-50">
             {{ actionLoading ? 'Сохраняем...' : 'Создать' }}
           </button>
         </div>
@@ -84,19 +81,12 @@
       <div class="absolute inset-0 bg-white/30 backdrop-blur-sm" @click="closeEdit"></div>
       <div class="relative bg-white p-6 rounded-2xl shadow-xl w-96 z-10" @click.stop>
         <h3 class="text-lg font-bold mb-4">Редактировать статью</h3>
-        <input
-          v-model="articleForm.name"
-          type="text"
-          placeholder="Название статьи"
-          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <input v-model="articleForm.name" type="text" placeholder="Название статьи"
+          class="border px-3 py-2 rounded w-full mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500" />
         <div class="flex justify-end gap-2">
           <button @click="closeEdit" class="px-3 py-1 border rounded">Отмена</button>
-          <button
-            @click="updateArticleHandler"
-            :disabled="actionLoading"
-            class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50"
-          >
+          <button @click="updateArticleHandler" :disabled="actionLoading"
+            class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-50">
             {{ actionLoading ? 'Сохраняем...' : 'Сохранить' }}
           </button>
         </div>
@@ -111,11 +101,8 @@
         <p class="mb-4">Вы действительно хотите удалить статью <strong>{{ deleteArticleModal.name }}</strong>?</p>
         <div class="flex justify-end gap-2">
           <button @click="closeDelete" class="px-3 py-1 border rounded">Отмена</button>
-          <button
-            @click="deleteArticleHandler"
-            :disabled="actionLoading"
-            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50"
-          >
+          <button @click="deleteArticleHandler" :disabled="actionLoading"
+            class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition disabled:opacity-50">
             {{ actionLoading ? 'Удаляем...' : 'Удалить' }}
           </button>
         </div>

@@ -22,7 +22,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="office in offices" :key="office.id" class="hover:bg-gray-50 transition">
+          <tr v-for="office in offices" :key="office.id"
+            class="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition border-b border-gray-200">
             <td class="px-3 py-2 text-gray-700">{{ office.name }}</td>
             <td class="px-3 py-2 flex justify-end gap-2">
               <button @click="openEditOffice(office)"
@@ -35,12 +36,26 @@
               </button>
             </td>
           </tr>
+
           <tr v-if="offices.length === 0">
-            <td colspan="2" class="text-center py-4 text-gray-500 text-sm">
+            <td colspan="2" class="text-center py-4 text-gray-500 text-sm border-b border-gray-200">
               Офисов нет
             </td>
           </tr>
+
+          <tr v-if="loading">
+            <td colspan="2" class="text-center py-4 text-gray-500 text-sm border-b border-gray-200">
+              Загрузка...
+            </td>
+          </tr>
+
+          <tr v-if="error">
+            <td colspan="2" class="text-center py-4 text-red-500 text-sm border-b border-gray-200">
+              {{ error }}
+            </td>
+          </tr>
         </tbody>
+
       </table>
     </div>
 
