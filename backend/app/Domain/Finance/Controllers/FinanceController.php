@@ -44,16 +44,28 @@ class FinanceController extends BaseController
     public function index(FinanceRequest $request)
     {
         $filters = $request->validated();
-        $filters['from'] = '1900-01-01';
-        $filters['to'] = $filters['date'] ?? now()->toDateString();
-        unset($filters['date']);
+
+        $date = $filters['date'] ?? now()->toDateString();
+
+        // Фильтры для списка — только выбранная дата
+        $listFilters = $filters;
+        $listFilters['from'] = $date;
+        $listFilters['to'] = $date;
+        unset($listFilters['date']);
+
+        // Фильтры для баланса — за всё время
+        $balanceFilters = $filters;
+        $balanceFilters['from'] = '1900-01-01';
+        $balanceFilters['to'] = $date;
+        unset($balanceFilters['date']);
 
         return response()->json([
-            'incomes' => $this->service->incomes($filters),
-            'expenses' => $this->service->expenses($filters),
-            'balance' => $this->service->balance($filters),
+            'incomes' => $this->service->incomes($listFilters),
+            'expenses' => $this->service->expenses($listFilters),
+            'balance' => $this->service->balance($balanceFilters),
         ]);
     }
+
 
 
 
