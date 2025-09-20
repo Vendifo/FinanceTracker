@@ -10,7 +10,6 @@ use App\Domain\Role\Controllers\RoleController;
 use App\Domain\User\Controllers\UserController;
 use App\Domain\UserOffice\Controllers\UserOfficeController;
 
-
 use Illuminate\Support\Facades\Route;
 
 // Публичные маршруты (не требуют токена)
@@ -26,8 +25,14 @@ Route::middleware('auth:sanctum')->group(function () {
     // Смена пароля конкретного пользователя (для админа)
     Route::post('users/{user}/change-password', [UserController::class, 'changePassword']);
 
+    // Назначение роли пользователю
     Route::post('users/{user}/assign-role', [UserController::class, 'assignRole']);
 
+    // Расширенный поиск
+    Route::get('incomes/search', [IncomeController::class, 'search']);
+    Route::get('expenses/search', [ExpenseController::class, 'search']);
+    
+    // CRUD
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('articles', ArticleController::class);
@@ -35,13 +40,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('incomes', IncomeController::class);
     Route::apiResource('expenses', ExpenseController::class);
 
-    Route::get('finance', [FinanceController::class, 'index']);
 
+    // Финансовая аналитика
+    Route::get('finance', [FinanceController::class, 'index']);
     Route::get('finance/summary', [FinanceController::class, 'summary']);
     Route::get('finance/dynamics', [FinanceController::class, 'dynamics']);
     Route::get('finance/balance-period', [FinanceController::class, 'balancePeriod']);
     Route::get('finance/by-office', [FinanceController::class, 'byOffice']);
-
     Route::get('finance/by-article', [FinanceController::class, 'byArticle']);
 
     // Список офисов конкретного пользователя
@@ -55,5 +60,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Текущий активный офис
     Route::get('current-office', [UserOfficeController::class, 'currentOffice']);
-
 });

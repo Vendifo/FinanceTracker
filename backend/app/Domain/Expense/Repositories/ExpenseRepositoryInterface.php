@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Интерфейс для работы с репозиторием расходов
- *
- * @package App\Interfaces\Repositories
  */
 interface ExpenseRepositoryInterface
 {
@@ -25,7 +23,7 @@ interface ExpenseRepositoryInterface
      * @param int $id
      * @return Expense|null
      */
-    public function find($id);
+    public function find(int $id);
 
     /**
      * Создать новый расход
@@ -51,4 +49,12 @@ interface ExpenseRepositoryInterface
      * @return bool
      */
     public function delete(Expense $expense);
+
+    /**
+     * Поиск расходов по фильтрам
+     *
+     * @param array $filters
+     * @return Collection|Expense[]
+     */
+    public function search(array $filters);
 }

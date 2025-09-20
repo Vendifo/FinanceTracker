@@ -3,6 +3,7 @@
 namespace App\Domain\Income\Services;
 
 use App\Domain\Income\Repositories\IncomeRepositoryInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Сервис для работы с доходами.
@@ -17,46 +18,21 @@ class IncomeService implements IncomeServiceInterface
         $this->incomeRepository = $incomeRepository;
     }
 
-
-    /**
-     * Получить все доходы.
-     *
-     * @return \Illuminate\Support\Collection
-     */
     public function all()
     {
         return $this->incomeRepository->all();
     }
 
-    /**
-     * Найти доход по ID.
-     *
-     * @param int $id
-     * @return \App\Models\Income|null
-     */
     public function find($id)
     {
         return $this->incomeRepository->find($id);
     }
 
-    /**
-     * Создать новый доход.
-     *
-     * @param array $data
-     * @return \App\Models\Income
-     */
     public function create(array $data)
     {
         return $this->incomeRepository->create($data);
     }
 
-    /**
-     * Обновить существующий доход по ID.
-     *
-     * @param int $id
-     * @param array $data
-     * @return \App\Models\Income|null
-     */
     public function update($id, array $data)
     {
         $income = $this->incomeRepository->find($id);
@@ -67,12 +43,6 @@ class IncomeService implements IncomeServiceInterface
         return $this->incomeRepository->update($income, $data);
     }
 
-    /**
-     * Удалить доход по ID.
-     *
-     * @param int $id
-     * @return bool
-     */
     public function delete($id)
     {
         $income = $this->incomeRepository->find($id);
@@ -81,5 +51,16 @@ class IncomeService implements IncomeServiceInterface
         }
 
         return $this->incomeRepository->delete($income);
+    }
+
+    /**
+     * Расширенный поиск доходов.
+     *
+     * @param array $filters
+     * @return LengthAwarePaginator
+     */
+    public function search(array $filters): LengthAwarePaginator
+    {
+        return $this->incomeRepository->search($filters);
     }
 }

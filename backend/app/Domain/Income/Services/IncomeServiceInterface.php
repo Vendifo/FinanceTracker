@@ -2,9 +2,11 @@
 
 namespace App\Domain\Income\Services;
 
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
 /**
  * Интерфейс сервиса работы с доходами.
- * Определяет методы для CRUD операций.
+ * Определяет методы для CRUD операций и поиска.
  */
 interface IncomeServiceInterface
 {
@@ -13,4 +15,12 @@ interface IncomeServiceInterface
     public function create(array $data);
     public function update($id, array $data);
     public function delete($id);
+
+    /**
+     * Расширенный поиск доходов.
+     *
+     * @param array $filters
+     * @return LengthAwarePaginator
+     */
+    public function search(array $filters): LengthAwarePaginator;
 }

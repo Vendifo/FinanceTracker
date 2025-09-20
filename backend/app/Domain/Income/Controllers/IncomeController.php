@@ -12,35 +12,18 @@ use App\Core\BaseController;
  */
 class IncomeController extends BaseController
 {
-    /** @var IncomeServiceInterface Сервис для работы с доходами */
     protected IncomeServiceInterface $incomeService;
 
-    /**
-     * Внедрение зависимости сервиса через конструктор.
-     *
-     * @param IncomeServiceInterface $incomeService
-     */
     public function __construct(IncomeServiceInterface $incomeService)
     {
         $this->incomeService = $incomeService;
     }
 
-    /**
-     * Получить список всех доходов.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function index()
     {
         return response()->json($this->incomeService->all());
     }
 
-    /**
-     * Показать конкретный доход по ID.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function show($id)
     {
         $income = $this->incomeService->find($id);
@@ -51,12 +34,6 @@ class IncomeController extends BaseController
         return response()->json($income, 200);
     }
 
-    /**
-     * Создать новый доход.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -64,7 +41,8 @@ class IncomeController extends BaseController
             'amount' => 'required|numeric',
             'article_id' => 'required|exists:articles,id',
             'office_id' => 'required|exists:offices,id',
-            'created_at' => 'nullable|date', // если не указано, будет текущее время
+            'user_id' => 'required|exists:users,id',
+            'created_at' => 'nullable|date',
         ]);
 
         $income = $this->incomeService->create($data);
@@ -72,13 +50,6 @@ class IncomeController extends BaseController
         return response()->json($income, 201);
     }
 
-    /**
-     * Обновить существующий доход.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function update(Request $request, $id)
     {
         $data = $request->validate([
@@ -86,6 +57,7 @@ class IncomeController extends BaseController
             'amount' => 'sometimes|numeric',
             'article_id' => 'sometimes|exists:articles,id',
             'office_id' => 'sometimes|exists:offices,id',
+            'user_id' => 'sometimes|exists:users,id',
             'created_at' => 'sometimes|date',
         ]);
 
@@ -98,12 +70,6 @@ class IncomeController extends BaseController
         return response()->json($income, 200);
     }
 
-    /**
-     * Удалить доход.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy($id)
     {
         $income = $this->incomeService->delete($id);
@@ -111,5 +77,32 @@ class IncomeController extends BaseController
             return response()->json(['message' => 'Income not found']);
         }
         return response()->json(['message' => 'Income deleted']);
+    }
+
+    /**
+     * Расширенный поиск доходов.
+     *
+     * Пример запроса:
+     * GET /api/incomes/search?description=Аренда&amount_min=100&amount_max=1000&date_from=2024-01-01&date_to=2024-12-31
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function search(Request $request)
+    {
+        $filters = $request->only([
+            'description',
+            'amount_min',
+            'amount_max',
+            'date_from',
+            'date_to',
+            'user_id',
+            'article_id',
+            'office_id',
+        ]);
+
+        $results = $this->incomeService->search($filters);
+
+        return response()->json($results);
     }
 }

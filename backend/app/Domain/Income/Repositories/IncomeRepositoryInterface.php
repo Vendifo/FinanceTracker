@@ -3,10 +3,11 @@
 namespace App\Domain\Income\Repositories;
 
 use App\Models\Income;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Интерфейс репозитория для работы с доходами.
- * Определяет базовые CRUD методы.
+ * Определяет базовые CRUD методы и расширенный поиск.
  */
 interface IncomeRepositoryInterface
 {
@@ -15,4 +16,12 @@ interface IncomeRepositoryInterface
     public function create(array $data);
     public function update(Income $income, array $data);
     public function delete(Income $income);
+
+    /**
+     * Расширенный поиск доходов по фильтрам.
+     *
+     * @param array $filters
+     * @return LengthAwarePaginator
+     */
+    public function search(array $filters): LengthAwarePaginator;
 }

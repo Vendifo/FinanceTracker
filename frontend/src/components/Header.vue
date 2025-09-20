@@ -27,6 +27,15 @@
           <span class="absolute left-0 -bottom-1 w-full h-0.5 bg-blue-600" v-if="$route.path === '/reports'"></span>
         </RouterLink>
       </ProtectedRole>
+
+      <!-- Поиск расходов -->
+      <RouterLink to="/search" class="relative text-gray-700 hover:text-blue-600 transition"
+        active-class="font-semibold text-blue-600">
+        Поиск
+        <span class="absolute left-0 -bottom-1 w-full h-0.5 bg-blue-600"
+          v-if="$route.path === '/expenses-search'"></span>
+      </RouterLink>
+
     </nav>
 
 
