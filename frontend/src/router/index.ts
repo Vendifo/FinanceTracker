@@ -5,6 +5,7 @@ import Register from '@/views/Register.vue';
 import Dashboard from '@/views/Dashboard.vue';
 import Users from '@/views/Users.vue';
 import Reports from '@/views/Reports.vue';
+import Search from '@/views/Search.vue';
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -13,6 +14,7 @@ const routes = [
   { path: '/dashboard', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/users', component: Users, meta: { requiresAuth: true } },
   { path: '/reports', component: Reports, meta: { requiresAuth: true } },
+  { path: '/search', component: Search },
 ];
 
 const router = createRouter({
