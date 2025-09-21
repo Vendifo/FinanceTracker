@@ -11,17 +11,18 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
+    host: true, // слушаем все интерфейсы
     port: 5173,
     proxy: {
+      // проксируем API и Sanctum к Laravel контейнеру через Docker-сеть
       '/api': {
-        target: 'http://147.45.151.90:9000',
+        target: 'http://laravel_nginx:80',
         changeOrigin: true,
         secure: false,
         cookieDomainRewrite: '',
       },
       '/sanctum': {
-        target: 'http://147.45.151.90:9000',
+        target: 'http://laravel_nginx:80',
         changeOrigin: true,
         secure: false,
         cookieDomainRewrite: '',
