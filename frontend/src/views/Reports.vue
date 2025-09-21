@@ -260,7 +260,7 @@ async function loadFilters() {
       api.get('/articles', { headers: authHeaders() }),
     ])
     offices.value = officesRes.data
-    articles.value = articlesRes.data
+    articles.value = articlesRes.data.data
   } catch (err: any) {
     console.error(err)
     error.value = 'Ошибка при загрузке офисов или статей'

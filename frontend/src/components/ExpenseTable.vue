@@ -37,8 +37,9 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option disabled value="">Выберите пользователя</option>
                 <option v-for="user in users" :key="user.id" :value="user.id">
-                  {{ user.name }}
-                </option>
+  {{ getUserName(user.id) }}
+</option>
+
               </select>
             </td>
             <td class="px-4 py-2">
@@ -99,7 +100,21 @@ const deletingIds = ref<number[]>([])
 const authHeaders = () => ({ Authorization: `Bearer ${userStore.token}` })
 
 const getArticleName = (id: number) => props.articles.find(a => a.id === id)?.name ?? '-'
-const getUserName = (id: number) => props.users.find(u => u.id === id)?.name ?? '-'
+const getUserName = (id: number) => {
+  const user = props.users.find(u => u.id === id)
+  if (!user) return '-'
+
+  const first = user.first_name?.trim()
+  const last = user.last_name?.trim()
+
+  if (first || last) {
+    return `${first ?? ''} ${last ?? ''}`.trim()
+  }
+
+  return user.name ?? '-'
+}
+
+
 
 // добавление расхода
 const saveExpense = async () => {

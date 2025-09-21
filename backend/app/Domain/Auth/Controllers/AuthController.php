@@ -49,12 +49,15 @@ class AuthController extends BaseController
      */
     public function login(LoginRequest $request): JsonResponse
     {
-        $user = User::where('email', $request->email)->first();
+        // Ищем пользователя по email или username
+        $user = User::where('email', $request->email)
+            ->orWhere('name', $request->email)
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->apiResponse(
                 null,
-                'Invalid email or password',
+                'Invalid email or username or password',
                 false,
                 401
             );
@@ -70,6 +73,8 @@ class AuthController extends BaseController
             'Login successful'
         );
     }
+
+
 
     /**
      * Получение текущего авторизованного пользователя
