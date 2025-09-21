@@ -15,7 +15,7 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     cors: true,
-    allowedHosts: ['vue_frontend', 'localhost', 'касса-крым.рф'], // добавили хосты для nginx и домена
+    allowedHosts: ['vue_frontend', 'localhost', 'касса-крым.рф', 'xn----7sba2bdm1aea8h.xn--p1ai'  ], // добавили хосты для nginx и домена
     proxy: {
       '/api': {
         target: 'http://147.45.151.90:9000',
