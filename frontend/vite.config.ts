@@ -11,7 +11,11 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,
+    host: true,   // слушать все интерфейсы (0.0.0.0)
+    port: 5173,
+    strictPort: true,
+    cors: true,
+    allowedHosts: ['vue_frontend', 'localhost', 'касса-крым.рф'], // добавили хосты для nginx и домена
     proxy: {
       '/api': {
         target: 'http://147.45.151.90:9000',
