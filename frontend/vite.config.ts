@@ -12,18 +12,19 @@ export default defineConfig({
   },
   server: {
     host: true,
+    port: 5173,
     proxy: {
       '/api': {
-        target: 'http://147.45.151.90',
+        target: 'http://147.45.151.90:9000',
         changeOrigin: true,
         secure: false,
-        cookieDomainRewrite: '147.45.151.90',
+        cookieDomainRewrite: '',
       },
       '/sanctum': {
-        target: 'http://147.45.151.90',
+        target: 'http://147.45.151.90:9000',
         changeOrigin: true,
         secure: false,
-        cookieDomainRewrite: '147.45.151.90', 
+        cookieDomainRewrite: '',
       },
     },
   },
