@@ -18,13 +18,13 @@ export default defineConfig({
     allowedHosts: ['vue_frontend', 'localhost', 'касса-крым.рф', 'xn----7sba2bdm1aea8h.xn--p1ai'  ], // добавили хосты для nginx и домена
     proxy: {
       '/api': {
-        target: 'http://147.45.151.90:9000',
+        target: 'http://касса-крым.рф',
         changeOrigin: true,
         secure: false,
         cookieDomainRewrite: 'localhost', // важно для CSRF и сессий
       },
       '/sanctum': {
-        target: 'http://147.45.151.90:9000',
+        target: 'http://касса-крым.рф',
         changeOrigin: true,
         secure: false,
         cookieDomainRewrite: 'localhost',
