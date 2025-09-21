@@ -14,16 +14,16 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://92.255.76.182:9000',
+        target: 'http://147.45.151.90',
         changeOrigin: true,
         secure: false,
-        cookieDomainRewrite: 'localhost', // важно для CSRF и сессий
+        cookieDomainRewrite: '147.45.151.90',
       },
       '/sanctum': {
-        target: 'http://92.255.76.182:9000',
+        target: 'http://147.45.151.90',
         changeOrigin: true,
         secure: false,
-        cookieDomainRewrite: 'localhost',
+        cookieDomainRewrite: '147.45.151.90', 
       },
     },
   },
