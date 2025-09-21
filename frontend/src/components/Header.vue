@@ -11,7 +11,7 @@
       </RouterLink>
 
       <!-- Пользователи: только admin и manager -->
-      <ProtectedRole :roles="['admin', 'manager']">
+      <ProtectedRole :roles="['admin']">
         <RouterLink to="/users" class="relative text-gray-700 hover:text-blue-600 transition"
           active-class="font-semibold text-blue-600">
           Пользователи
