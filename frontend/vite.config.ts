@@ -13,6 +13,12 @@ export default defineConfig({
   server: {
     host: true, // слушаем все интерфейсы
     port: 5173,
+    strictPort: false,
+    hmr: {
+      host: 'касса-крым.рф', // для HMR
+    },
+    cors: true,
+    allowedHosts: ['.'], // разрешить все хосты
     proxy: {
       '/api': {
         target: 'http://laravel_nginx:80',
