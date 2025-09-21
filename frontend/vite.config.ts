@@ -11,26 +11,19 @@ export default defineConfig({
     },
   },
   server: {
-    host: true, // слушаем все интерфейсы
-    port: 5173,
-    strictPort: false,
-    hmr: {
-      host: 'касса-крым.рф', // для HMR
-    },
-    cors: true,
-    allowedHosts: ['.'], // разрешить все хосты
+    host: true,
     proxy: {
       '/api': {
-        target: 'http://laravel_nginx:80',
+        target: 'http://147.45.151.90:9000',
         changeOrigin: true,
         secure: false,
-        cookieDomainRewrite: '',
+        cookieDomainRewrite: 'localhost', // важно для CSRF и сессий
       },
       '/sanctum': {
-        target: 'http://laravel_nginx:80',
+        target: 'http://147.45.151.90:9000',
         changeOrigin: true,
         secure: false,
-        cookieDomainRewrite: '',
+        cookieDomainRewrite: 'localhost',
       },
     },
   },
