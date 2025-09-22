@@ -41,7 +41,6 @@ class IncomeController extends BaseController
             'amount' => 'required|numeric',
             'article_id' => 'required|exists:articles,id',
             'office_id' => 'required|exists:offices,id',
-            'user_id' => 'required|exists:users,id',
             'created_at' => 'nullable|date',
         ]);
 
@@ -50,6 +49,7 @@ class IncomeController extends BaseController
         return response()->json($income, 201);
     }
 
+
     public function update(Request $request, $id)
     {
         $data = $request->validate([
@@ -57,7 +57,6 @@ class IncomeController extends BaseController
             'amount' => 'sometimes|numeric',
             'article_id' => 'sometimes|exists:articles,id',
             'office_id' => 'sometimes|exists:offices,id',
-            'user_id' => 'sometimes|exists:users,id',
             'created_at' => 'sometimes|date',
         ]);
 
