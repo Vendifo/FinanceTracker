@@ -1,11 +1,12 @@
 <template>
   <div class="bg-white text-gray-800 rounded-lg shadow p-6">
-    <h3 class="text-2xl font-semibold mb-4">
-      Расходы
-      <span class="ml-2 text-lg text-gray-600">
-        (Итого: {{ totalExpenses.toLocaleString('ru-RU', { maximumFractionDigits: 0 }) }} ₽)
-      </span>
-    </h3>
+    <h3 class="flex justify-between items-center text-2xl font-semibold mb-4">
+  <span>Расходы</span>
+  <span class="text-red-600 font-medium text-lg">
+    Итого: {{ totalExpenses.toLocaleString('ru-RU', { maximumFractionDigits: 0 }) }} ₽
+  </span>
+</h3>
+
     <div class="overflow-x-auto">
       <table class="min-w-full border border-gray-200">
         <thead class="bg-gray-50 text-gray-600 text-sm font-medium border-b border-gray-300">

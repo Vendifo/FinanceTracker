@@ -1,11 +1,12 @@
 <template>
   <div class="bg-white text-gray-800 rounded-lg shadow p-6">
-    <h3 class="text-2xl font-semibold mb-4">
-      Приходы
-      <span class="ml-2 text-lg text-gray-600">
-        (Итого: {{ totalIncomes.toLocaleString('ru-RU', { maximumFractionDigits: 0 }) }} ₽)
-      </span>
-    </h3>
+    <h3 class="flex justify-between items-center text-2xl font-semibold mb-4">
+  <span>Приходы</span>
+  <span class="text-green-600 font-medium text-lg">
+    Итого: {{ totalIncomes.toLocaleString('ru-RU', { maximumFractionDigits: 0 }) }} ₽
+  </span>
+</h3>
+
 
     <div class="overflow-x-auto">
       <table class="min-w-full border border-gray-200">
