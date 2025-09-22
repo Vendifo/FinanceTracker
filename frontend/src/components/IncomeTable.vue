@@ -1,6 +1,11 @@
 <template>
   <div class="bg-white text-gray-800 rounded-lg shadow p-6">
-    <h3 class="text-2xl font-semibold mb-4">Приходы</h3>
+    <h3 class="text-2xl font-semibold mb-4">
+      Приходы
+      <span class="ml-2 text-lg text-gray-600">
+        (Итого: {{ totalIncomes.toLocaleString('ru-RU', { maximumFractionDigits: 0 }) }} ₽)
+      </span>
+    </h3>
 
     <div class="overflow-x-auto">
       <table class="min-w-full border border-gray-200">
@@ -63,7 +68,7 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import api from '@/axios'
 import { useUserStore } from '@/stores/userStore'
 import { useAlert } from '@/composables/useAlert'
@@ -73,6 +78,11 @@ const userStore = useUserStore()
 
 const props = defineProps<{ incomes: any[], articles: any[], officeId: number | null, filterDate: string }>()
 const emits = defineEmits(['refresh'])
+
+// вычисляем общую сумму приходов
+const totalIncomes = computed(() =>
+  props.incomes.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0)
+)
 
 // форма и состояния загрузки
 const form = ref({ description: '', amount: 0, article_id: '' })

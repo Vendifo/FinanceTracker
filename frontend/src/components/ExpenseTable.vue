@@ -1,7 +1,11 @@
 <template>
   <div class="bg-white text-gray-800 rounded-lg shadow p-6">
-    <h3 class="text-2xl font-semibold mb-4">Расходы</h3>
-
+    <h3 class="text-2xl font-semibold mb-4">
+      Расходы
+      <span class="ml-2 text-lg text-gray-600">
+        (Итого: {{ totalExpenses.toLocaleString('ru-RU', { maximumFractionDigits: 0 }) }} ₽)
+      </span>
+    </h3>
     <div class="overflow-x-auto">
       <table class="min-w-full border border-gray-200">
         <thead class="bg-gray-50 text-gray-600 text-sm font-medium border-b border-gray-300">
@@ -37,8 +41,8 @@
                 class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500">
                 <option disabled value="">Выберите пользователя</option>
                 <option v-for="user in users" :key="user.id" :value="user.id">
-  {{ getUserName(user.id) }}
-</option>
+                  {{ getUserName(user.id) }}
+                </option>
 
               </select>
             </td>
@@ -75,7 +79,7 @@
 
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import api from '@/axios'
 import { useUserStore } from '@/stores/userStore'
 import { useAlert } from '@/composables/useAlert'
@@ -92,7 +96,12 @@ const props = defineProps<{
 }>()
 const emits = defineEmits(['refresh'])
 
-// форма и состояния загрузки
+// 🔹 вычисляем общую сумму расходов
+const totalExpenses = computed(() =>
+  props.expenses.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0)
+)
+
+// форма и состояния
 const form = ref({ description: '', amount: 0, article_id: '', user_id: '' })
 const loading = ref(false)
 const deletingIds = ref<number[]>([])
