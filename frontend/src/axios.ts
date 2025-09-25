@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Берем URL из переменной окружения, иначе используем IP VPS
-const API_URL = import.meta.env.VITE_API_URL || 'http://касса-крым.рф';
+const API_URL = import.meta.env.VITE_API_URL || 'https://касса-крым.рф';
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
