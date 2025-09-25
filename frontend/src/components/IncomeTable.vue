@@ -48,7 +48,7 @@
         </thead>
 
         <tbody>
-          <tr v-for="income in incomes" :key="income.id"
+          <tr v-for="income in [...props.incomes].reverse()" :key="income.id"
             class="odd:bg-white even:bg-gray-50 hover:bg-gray-100 transition border-b border-gray-200">
             <td class="px-4 py-3 font-medium text-gray-900">{{ income.description }}</td>
             <td class="px-4 py-3 text-gray-700">{{ income.amount }} ₽</td>
