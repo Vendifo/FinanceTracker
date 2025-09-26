@@ -41,8 +41,6 @@ services:
       MYSQL_ROOT_PASSWORD: 3OeGt9nEC3v
     volumes:
       - dbdata:/var/lib/mysql
-    ports:
-      - "3306:3306"
     networks:
       - app-network
 
@@ -55,10 +53,9 @@ services:
     environment:
       PMA_HOST: laravel_db
       MYSQL_ROOT_PASSWORD: 3OeGt9nEC3v
-    ports:
-      - "8080:80"
     networks:
       - app-network
+
 
   vue_frontend:
     image: node:24
