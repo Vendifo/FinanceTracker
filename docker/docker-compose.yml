@@ -37,8 +37,8 @@ services:
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel
-      MYSQL_PASSWORD: p8G#v9LqR!wZ2bXs4T@eJ7yNfH6uQmCk
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: N7v$2kL!qP8#rTz5
+      MYSQL_ROOT_PASSWORD: N7v$2kL!qP8#rTz5
     volumes:
       - dbdata:/var/lib/mysql
     ports:
@@ -54,7 +54,8 @@ services:
       - laravel_db
     environment:
       PMA_HOST: laravel_db
-      MYSQL_ROOT_PASSWORD: root
+      PMA_USER: laravel
+      PMA_PASSWORD: N7v$2kL!qP8#rTz5
     ports:
       - "8080:80"
     networks:
