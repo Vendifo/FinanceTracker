@@ -37,8 +37,8 @@ services:
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_USER: laravel
-      MYSQL_PASSWORD: N7v$2kL!qP8#rTz5
-      MYSQL_ROOT_PASSWORD: N7v$2kL!qP8#rTz5
+      MYSQL_PASSWORD: GAtkw57{E–[a4Hd
+      MYSQL_ROOT_PASSWORD: 3#OeGt%9n\EC3v?
     volumes:
       - dbdata:/var/lib/mysql
     ports:
@@ -54,11 +54,11 @@ services:
       - laravel_db
     environment:
       PMA_HOST: laravel_db
-    ports:
+      MYSQL_ROOT_PASSWORD: 3#OeGt%9n\EC3v?
+    volumes:
       - "8080:80"
     networks:
       - app-network
-
 
   vue_frontend:
     image: node:24
