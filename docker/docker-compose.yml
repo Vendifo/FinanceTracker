@@ -55,7 +55,7 @@ services:
     environment:
       PMA_HOST: laravel_db
       MYSQL_ROOT_PASSWORD: 3#OeGt%9n\EC3v?
-    volumes:
+    ports:
       - "8080:80"
     networks:
       - app-network
