@@ -54,12 +54,11 @@ services:
       - laravel_db
     environment:
       PMA_HOST: laravel_db
-      PMA_USER: laravel
-      PMA_PASSWORD: N7v$2kL!qP8#rTz5
     ports:
       - "8080:80"
     networks:
       - app-network
+
 
   vue_frontend:
     image: node:24
