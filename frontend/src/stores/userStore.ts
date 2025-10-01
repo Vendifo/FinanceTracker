@@ -34,7 +34,7 @@ export const useUserStore = defineStore('user', {
     // получение текущего пользователя
     async fetchUser() {
       try {
-        const res = await api.get('/me'); // /me возвращает user из Laravel
+        const res = await api.get('/current'); // /me возвращает user из Laravel
         this.user = res.data.data.user;
       } catch (err) {
         console.error('Не удалось получить пользователя', err);
