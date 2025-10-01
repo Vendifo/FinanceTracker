@@ -28,6 +28,11 @@ export default defineConfig({
         secure: false,
       },
     },
-    hmr: false, // отключаем HMR, чтобы dev сервер не перезагружал страницу
+    hmr: {
+    protocol: 'ws',
+    host: 'xn----7sba2bdm1aea8h.xn--p1ai', // или IP сервера
+    timeout: 30000, // увеличиваем таймаут HMR
+    overlay: false,
+  },
   },
 });
