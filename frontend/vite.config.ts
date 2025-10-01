@@ -1,7 +1,7 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import tailwindcss from '@tailwindcss/vite'
-import path from 'path'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import tailwindcss from '@tailwindcss/vite';
+import path from 'path';
 
 export default defineConfig({
   plugins: [vue(), tailwindcss()],
@@ -28,8 +28,6 @@ export default defineConfig({
         secure: false,
       },
     },
-    hmr: {
-      timeout: 24 * 60 * 60 * 1000, // 24 часа в миллисекундах
-    },
+    hmr: false, // отключаем HMR, чтобы dev сервер не перезагружал страницу
   },
-})
+});
