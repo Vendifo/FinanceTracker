@@ -11,11 +11,11 @@ export default defineConfig({
     },
   },
   server: {
-    host: true, // слушать все интерфейсы (0.0.0.0)
+    host: true,
     port: 5173,
     strictPort: true,
     cors: true,
-    allowedHosts: ['vue_frontend', 'localhost', 'касса-крым.рф', 'xn----7sba2bdm1aea8h.xn--p1ai'], // добавили хосты для nginx и домена
+    allowedHosts: ['vue_frontend', 'localhost', 'касса-крым.рф', 'xn----7sba2bdm1aea8h.xn--p1ai'],
     proxy: {
       '/api': {
         target: 'https://касса-крым.рф',
@@ -27,6 +27,9 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+    },
+    hmr: {
+      timeout: 24 * 60 * 60 * 1000, // 24 часа в миллисекундах
     },
   },
 })

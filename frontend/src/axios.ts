@@ -1,14 +1,14 @@
 import axios from 'axios';
 
-// Берем URL из переменной окружения
+// Берем URL из переменной окружения, иначе используем IP VPS
 const API_URL = import.meta.env.VITE_API_URL || 'https://касса-крым.рф';
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
-  withCredentials: true, // важно для cookie-based auth
+  withCredentials: true, // обязательно для Sanctum
 });
 
-// Получение CSRF cookie (обязательно перед login/register)
+// Получение CSRF куки
 export const getCsrf = async () => {
   try {
     await axios.get(`${API_URL}/sanctum/csrf-cookie`, {
