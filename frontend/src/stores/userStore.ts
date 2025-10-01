@@ -3,59 +3,60 @@ import api, { getCsrf } from '../axios';
 
 export const useUserStore = defineStore('user', {
   state: () => ({
-    token: localStorage.getItem('token') || '',
     user: null as null | any,
     isAuthChecked: false,
   }),
   getters: {
-    isAuthenticated: (state) => !!state.token,
+    isAuthenticated: (state) => !!state.user,
   },
   actions: {
-    async login(email: string, password: string) {
-      await getCsrf(); // CSRF перед логином
-      const res = await api.post('/login', { email, password });
-      this.token = res.data.data.token;
-      this.user = res.data.data.user;
-      localStorage.setItem('token', this.token);
-      this.isAuthChecked = true;
-    },
-
+    // регистрация
     async register(name: string, email: string, password: string, passwordConfirmation: string) {
-      await getCsrf(); // CSRF перед регистрацией
+      await getCsrf();
       await api.post('/register', {
         name,
         email,
         password,
         password_confirmation: passwordConfirmation,
       });
-      // токен пока не сохраняем, будет через login
+      // после регистрации сразу логинимся
+      await this.login(email, password);
     },
 
-    async checkToken() {
-      if (this.isAuthChecked || !this.token) return;
-
-      try {
-        const res = await api.get('/current', { headers: { Authorization: `Bearer ${this.token}` } });
-        this.user = res.data.data.user;
-        this.isAuthChecked = true;
-      } catch (err) {
-        console.error('Проверка токена не удалась', err);
-        await this.logout();
-      }
-    },
-
-    async logout() {
-      if (this.token) {
-        try {
-          await api.post('/logout', {}, { headers: { Authorization: `Bearer ${this.token}` } });
-        } catch (err) {
-          console.error('Ошибка при logout', err);
-        }
-      }
-      this.token = '';
-      this.user = null;
+    // вход
+    async login(email: string, password: string) {
+      await getCsrf(); // CSRF перед login
+      await api.post('/login', { email, password });
+      await this.fetchUser(); // получаем пользователя
       this.isAuthChecked = true;
-      localStorage.removeItem('token');
+    },
+
+    // получение текущего пользователя
+    async fetchUser() {
+      try {
+        const res = await api.get('/me'); // /me возвращает user из Laravel
+        this.user = res.data.data.user;
+      } catch (err) {
+        console.error('Не удалось получить пользователя', err);
+        this.user = null;
+      }
+    },
+
+    // проверка сессии при старте приложения
+    async checkAuth() {
+      if (this.isAuthChecked) return;
+      await this.fetchUser();
+      this.isAuthChecked = true;
+    },
+
+    // выход
+    async logout() {
+      try {
+        await api.post('/logout');
+      } catch (err) {
+        console.error('Ошибка при logout', err);
+      }
+      this.user = null;
     },
   },
 });
